@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input, model, output } from '@angul
 import {
   SelectOption,
   UiButtonComponent,
+  UiFormGridComponent,
   UiInputComponent,
   UiPhoneInputComponent,
   UiSelectComponent,
@@ -12,7 +13,7 @@ import { COUNTRIES } from '@wizz/utils';
 @Component({
   selector: 'app-individual-signup-form',
   standalone: true,
-  imports: [UiButtonComponent, UiInputComponent, UiPhoneInputComponent, UiSelectComponent],
+  imports: [UiButtonComponent, UiFormGridComponent, UiInputComponent, UiPhoneInputComponent, UiSelectComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <form class="signup-form" (submit)="handleSubmit($event)">
@@ -27,7 +28,7 @@ import { COUNTRIES } from '@wizz/utils';
         [error]="submitted() && !firstName().trim() ? 'First name is required' : ''"
       />
 
-      <div class="two-col">
+      <wizz-form-grid>
         <wizz-input label="Middle Name" placeholder="Enter Middle Name" [(value)]="middleName" />
         <wizz-input
           label="Last Name"
@@ -35,7 +36,7 @@ import { COUNTRIES } from '@wizz/utils';
           [(value)]="lastName"
           [error]="submitted() && !lastName().trim() ? 'Last name is required' : ''"
         />
-      </div>
+      </wizz-form-grid>
 
       <wizz-input
         label="Email Address"
@@ -129,11 +130,6 @@ import { COUNTRIES } from '@wizz/utils';
         font-size: 1.5rem;
         font-weight: 800;
       }
-      .two-col {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-      }
       .terms-check {
         display: flex;
         align-items: flex-start;
@@ -170,11 +166,6 @@ import { COUNTRIES } from '@wizz/utils';
         margin: -6px 0 0;
         color: var(--wizz-danger);
         font-size: 0.75rem;
-      }
-      @media (max-width: 520px) {
-        .two-col {
-          grid-template-columns: 1fr;
-        }
       }
     `,
   ],

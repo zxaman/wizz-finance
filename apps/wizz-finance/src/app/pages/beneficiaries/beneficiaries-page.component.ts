@@ -18,6 +18,7 @@ import {
   UiButtonComponent,
   UiDrawerComponent,
   UiEmptyStateComponent,
+  UiFormGridComponent,
   UiInputComponent,
   UiModalComponent,
   UiPhoneInputComponent,
@@ -51,6 +52,7 @@ type BeneficiaryModal =
     UiDrawerComponent,
     UiModalComponent,
     UiEmptyStateComponent,
+    UiFormGridComponent,
     WizzIconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -172,32 +174,32 @@ type BeneficiaryModal =
                   </div>
                 </div>
                 <wizz-input label="First Name" placeholder="Jessica" [(value)]="firstName" />
-                <div class="two-col">
+                <wizz-form-grid>
                   <wizz-input label="Middle Name" placeholder="Enter Middle Name" [(value)]="middleName" />
                   <wizz-input label="Last Name" placeholder="Thompson" [(value)]="lastName" />
-                </div>
+                </wizz-form-grid>
                 <wizz-input label="Beneficiary Email" type="email" placeholder="jess@gmail.com" [(value)]="email" />
                 <wizz-phone-input label="Beneficiary's Phone Number" [(dialCode)]="dialCode" [(phone)]="phone" />
-                <div class="two-col">
+                <wizz-form-grid>
                   <wizz-input label="Date Of Birth" type="date" [(value)]="dob" />
                   <wizz-select label="Gender" [options]="genderOptions" [(value)]="gender" />
-                </div>
-                <div class="two-col">
+                </wizz-form-grid>
+                <wizz-form-grid>
                   <wizz-select label="Nationality" [options]="countryOptions" [(value)]="nationality" />
                   <wizz-input label="Occupation" placeholder="Enter Occupation" [(value)]="occupation" />
-                </div>
-                <div class="two-col">
+                </wizz-form-grid>
+                <wizz-form-grid>
                   <wizz-select label="Place of Birth" [options]="countryOptions" [(value)]="placeOfBirth" />
                   <wizz-select label="Relationship" [options]="relationOptions" [(value)]="relationship" />
-                </div>
+                </wizz-form-grid>
                 <span class="sec-label">IDENTITY DOCUMENT (OPTIONAL)</span>
                 <wizz-input label="Document Number" placeholder="818726261999" [(value)]="docNumber" />
                 <wizz-select label="Document Type" [options]="docTypeOptions" [(value)]="docType" />
                 <wizz-select label="Country Issued" [options]="countryOptions" [(value)]="docCountry" />
-                <div class="two-col">
+                <wizz-form-grid>
                   <wizz-input label="Issued Date" type="date" [(value)]="docIssued" />
                   <wizz-input label="Expiration Date" type="date" [(value)]="docExpiry" />
-                </div>
+                </wizz-form-grid>
               </div>
             }
             @case (1) {
@@ -206,10 +208,10 @@ type BeneficiaryModal =
                 <wizz-input label="Address Line 1" placeholder="Enter street address" [(value)]="addrLine1" />
                 <wizz-input label="Address Line 2" placeholder="Apt, suite, unit, building, floor, etc." [(value)]="addrLine2" />
                 <wizz-input label="Zip Code" placeholder="Enter ZIP" [(value)]="addrZip" />
-                <div class="two-col">
+                <wizz-form-grid>
                   <wizz-input label="City" placeholder="Enter city" [(value)]="addrCity" />
                   <wizz-input label="State" placeholder="Enter state" [(value)]="addrState" />
-                </div>
+                </wizz-form-grid>
               </div>
             }
             @case (2) {
@@ -564,7 +566,6 @@ type BeneficiaryModal =
       .radio-card span { display: inline-flex; align-items: center; gap: 6px; }
       .radio-card--selected { border-color: var(--wizz-primary); background: var(--wizz-primary-soft); }
       .radio-card--disabled { opacity: 0.65; background: var(--wizz-surface-muted); }
-      .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       .drawer-footer-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
       .drawer-footer-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       .ml-auto { margin-left: auto; }
@@ -590,7 +591,7 @@ type BeneficiaryModal =
       @media (max-width: 640px) {
         .ben-title-search, .search-filter-group { width: 100%; min-width: 0; }
         .search-box { width: 100%; min-width: 0; flex: 1; }
-        .ben-type-selector, .two-col, .detail-grid, .drawer-footer-two { grid-template-columns: 1fr; }
+        .ben-type-selector, .detail-grid, .drawer-footer-two { grid-template-columns: 1fr; }
         .filter-split { min-height: 0; }
         .drawer-footer-row { align-items: stretch; flex-direction: column; }
         .drawer-footer-row > * { width: 100%; }

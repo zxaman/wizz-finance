@@ -55,7 +55,9 @@ npx nx graph                         # Open the project dependency graph
 - `libs/remittance/feature-shell/` — Shared authentication and application shells.
 - `public/` — Source design boards and flow notes used to implement the screens.
 
-The active Paygate entry route currently presents the responsive landing page; account-entry routes are available from its Login and Sign Up actions. Feature components for subsequent flows are in the app source and are being connected incrementally.
+## Shared UI patterns
+
+Import shared standalone components from `@wizz/ui` rather than rebuilding common controls in feature pages. The library includes buttons, inputs, select and phone fields, OTP fields, badges, tabs, accordions, drawers, modals, empty states, icons, and toast notifications. `UiModalComponent` (`<wizz-modal>`) owns the common modal layout and behavior; pages supply their own state-specific content. For multi-field layouts, use `UiFormGridComponent` (`<wizz-form-grid>`), which supports configurable columns and spacing and collapses to one column on narrow screens. The signup, beneficiary, and payment-method forms use the same responsive grid.
 
 ## Tech stack
 

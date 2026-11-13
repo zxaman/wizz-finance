@@ -22,6 +22,7 @@ import {
   UiButtonComponent,
   UiDrawerComponent,
   UiEmptyStateComponent,
+  UiFormGridComponent,
   UiInputComponent,
   UiModalComponent,
   UiPhoneInputComponent,
@@ -49,6 +50,7 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
     UiTabsComponent,
     UiAccordionComponent,
     UiEmptyStateComponent,
+    UiFormGridComponent,
     WizzIconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -110,7 +112,10 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
           <div class="drawer-stack">
             <wizz-select label="Country" [options]="countryOptions" [(value)]="cardCountry" />
             <wizz-input label="Card Number" placeholder="0000 0000 0000 0000" [(value)]="cardNumber" />
-            <div class="two-col"><wizz-input label="Expiry Date" type="date" [(value)]="cardExpiry" /><wizz-input label="CVV" placeholder="000" type="password" [(value)]="cardCvv" /></div>
+            <wizz-form-grid>
+              <wizz-input label="Expiry Date" type="date" [(value)]="cardExpiry" />
+              <wizz-input label="CVV" placeholder="000" type="password" [(value)]="cardCvv" />
+            </wizz-form-grid>
             <wizz-input label="Cardholder Name" placeholder="Enter name on card" [(value)]="cardHolderName" />
             <wizz-input label="Billing Address" placeholder="Street, City, Zip" [(value)]="cardBillingAddress" />
             <div class="toggle-row"><span>Set as Primary Payment Method</span><input type="checkbox" [(ngModel)]="cardIsPrimary" /></div>
@@ -205,7 +210,6 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
       .pm-info strong { display: block; font-size: 0.88rem; }
       .pm-info small { font-size: 0.74rem; color: var(--wizz-text-muted); }
       .drawer-stack { display: flex; flex-direction: column; gap: 13px; }
-      .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; font-size: 0.84rem; }
       .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
       .detail-grid small { display: block; font-size: 0.7rem; color: var(--wizz-text-muted); margin-bottom: 2px; }
@@ -218,7 +222,7 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
       .sec-label { font-size: 0.7rem; font-weight: 700; color: var(--wizz-text-muted); }
       @media (max-width: 480px) {
         .pm-header { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
-        .two-col, .detail-grid { grid-template-columns: 1fr; }
+        .detail-grid { grid-template-columns: 1fr; }
         .verify-banner { align-items: flex-start; }
       }
     `,
