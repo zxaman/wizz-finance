@@ -1,0 +1,9 @@
+{
+  "name": "remittance-data-access",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/remittance/data-access/src",
+  "prefix": "wizz",
+  "projectType": "library",
+  "tags": ["scope:remittance", "type:data-access"],
+  "targets": {}
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "wizz-partner-portal",
+  "projectType": "application",
+  "sourceRoot": "apps/wizz-partner-portal/src",
+  "prefix": "wizz-partner",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/wizz-partner-portal",
+        "index": "apps/wizz-partner-portal/src/index.html",
+        "main": "apps/wizz-partner-portal/src/main.ts",
+        "tsConfig": "apps/wizz-partner-portal/tsconfig.app.json",
+        "assets": [
+          "apps/wizz-partner-portal/src/favicon.ico",
+          "apps/wizz-partner-portal/src/assets"
+        ],
+        "styles": ["apps/wizz-partner-portal/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [{ "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" }],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@nx/angular:dev-server",
+      "options": {
+        "buildTarget": "wizz-partner-portal:build",
+        "port": 4201,
+        "host": "0.0.0.0",
+        "allowedHosts": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "wizz-partner-portal:build:production"
+        },
+        "development": {
+          "buildTarget": "wizz-partner-portal:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@nx/angular:extract-i18n",
+      "options": {
+        "buildTarget": "wizz-partner-portal:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["apps/wizz-partner-portal/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/wizz-partner-portal/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
