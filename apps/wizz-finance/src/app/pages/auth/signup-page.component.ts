@@ -5,26 +5,21 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ThemeService } from '@wizz/design-tokens';
 import { WizzPlatformStore } from '@wizz/remittance-data-access';
 import { AuthSplitShellComponent } from '@wizz/remittance-shell';
+import { IndividualSignupFormComponent } from './individual-signup-form.component';
+import { SignupProfileTypeStepComponent } from './signup-profile-type-step.component';
 import {
   BrandLogoComponent,
-  SelectOption,
   ToastService,
-  UiBadgeComponent,
   UiButtonComponent,
-  UiInputComponent,
   UiModalComponent,
   UiOtpFieldComponent,
-  UiPhoneInputComponent,
-  UiSelectComponent,
   WizzIconComponent,
 } from '@wizz/ui';
 import {
-  COUNTRIES,
   isAdult,
   isValidEmail,
   maskEmail,
@@ -49,16 +44,13 @@ type SignupModalKind =
   selector: 'app-signup-page',
   standalone: true,
   imports: [
-    FormsModule,
     RouterLink,
     AuthSplitShellComponent,
+    SignupProfileTypeStepComponent,
+    IndividualSignupFormComponent,
     BrandLogoComponent,
     UiButtonComponent,
-    UiInputComponent,
-    UiSelectComponent,
-    UiPhoneInputComponent,
     UiOtpFieldComponent,
-    UiBadgeComponent,
     UiModalComponent,
     WizzIconComponent,
   ],
@@ -156,175 +148,32 @@ type SignupModalKind =
         (altActionClicked)="goToLogin()"
       >
         @if (step() === 'profile-type') {
-          <!-- Screen 02a: Choose Your Profile Type -->
-          <div class="profile-type-box">
-            <h1>Choose Your Profile Type</h1>
-            <p class="lead">
-              Selecting your profile type helps us unlock the most relevant tools, documents, and
-              compliance checks for you.
-            </p>
-
-            <div class="type-cards">
-              <button type="button" class="type-card type-card--active" (click)="step.set('form')">
-                <div class="type-icon">
-                  <wizz-icon name="user" [size]="20" />
-                </div>
-                <h3>Individual</h3>
-                <p>For solo professionals and anyone sending or receiving money globally</p>
-              </button>
-
-              <div class="type-card type-card--disabled">
-                <div class="type-top-row">
-                  <div class="type-icon type-icon--muted">
-                    <wizz-icon name="building-2" [size]="20" />
-                  </div>
-                  <wizz-badge tone="coming-soon">Coming Soon</wizz-badge>
-                </div>
-                <h3>Organization</h3>
-                <p>Registered company or entity receiving cross-border payments</p>
-              </div>
-            </div>
-
-            <p class="faq-note">
-              Not sure what category you fall in?
-              <button type="button" class="wizz-link" (click)="activeModal.set('faq')">
-                Refer our FAQs
-              </button>
-            </p>
-          </div>
+          <app-signup-profile-type-step
+            (individualSelected)="step.set('form')"
+            (faqRequested)="activeModal.set('faq')"
+          />
         } @else {
-          <!-- Screen 02b: Sign up on Paygate Form -->
-          <form class="signup-form" (ngSubmit)="submitRegistration()">
-            <div class="form-head-row">
-              <h1>Sign up on {{ theme.brandName() }}</h1>
-              <button
-                type="button"
-                class="demo-chip"
-                (click)="showScenarioBar.update(v => !v)"
-                title="Test Figma 02, 03, 04 states"
-              >
-                <wizz-icon name="sparkles" [size]="13" />
-                <span>States</span>
-              </button>
-            </div>
-
-            @if (showScenarioBar()) {
-              <div class="scenario-strip">
-                <span class="scenario-label">Test Figma Flows (02–04):</span>
-                <div class="scenario-btns">
-                  <button type="button" (click)="activeModal.set('unique-exists')">
-                    03: Account Exists
-                  </button>
-                  <button type="button" (click)="activeModal.set('unique-similar')">
-                    03: Similar Account
-                  </button>
-                  <button type="button" (click)="activeModal.set('unique-partner')">
-                    03: Partner Linked
-                  </button>
-                  <button type="button" (click)="activeModal.set('verify-otp')">
-                    04: Verify OTP
-                  </button>
-                  <button type="button" (click)="activeModal.set('age-error')">
-                    02: Under-18 Error
-                  </button>
-                </div>
-              </div>
-            }
-
-            <wizz-input
-              label="First Name"
-              placeholder="Enter First Name"
-              [(value)]="firstName"
-              [error]="submitted() && !firstName().trim() ? 'First name is required' : ''"
-            />
-
-            <div class="two-col">
-              <wizz-input
-                label="Middle Name"
-                placeholder="Enter Middle Name"
-                [(value)]="middleName"
-              />
-              <wizz-input
-                label="Last Name"
-                placeholder="Enter Last Name"
-                [(value)]="lastName"
-                [error]="submitted() && !lastName().trim() ? 'Last name is required' : ''"
-              />
-            </div>
-
-            <wizz-input
-              label="Email Address"
-              type="email"
-              placeholder="ajay@gmail.com"
-              [(value)]="email"
-              [error]="emailError()"
-            />
-
-            <wizz-phone-input
-              label="Mobile number"
-              [(dialCode)]="dialCode"
-              [(phone)]="phone"
-              [error]="submitted() && phone().trim().length < 7 ? 'Please enter a valid mobile number' : ''"
-            />
-
-            <wizz-select
-              label="Nationality"
-              placeholder="Choose a Country"
-              [options]="countryOptions"
-              [(value)]="nationality"
-              [error]="submitted() && !nationality() ? 'Please choose nationality' : ''"
-            />
-
-            <wizz-input
-              label="Date Of Birth"
-              type="date"
-              [(value)]="dob"
-              [error]="submitted() && !dob() ? 'Date of birth is required' : ''"
-            />
-
-            <wizz-input
-              label="Enter Password"
-              type="password"
-              placeholder="Enter Password"
-              [(value)]="password"
-              hint="Use a strong password of at least 12 characters with a mix of uppercase, lowercase, numbers, and symbols"
-              [error]="passwordError()"
-            />
-
-            <wizz-input
-              label="Confirm Password"
-              type="password"
-              placeholder="Enter Password Again"
-              [(value)]="confirmPassword"
-              [error]="confirmPasswordError()"
-            />
-
-            <label class="terms-check">
-              <input type="checkbox" [ngModel]="agreedTerms()" (ngModelChange)="agreedTerms.set($event)" name="agreedTerms" />
-              <span>
-                I agree with
-                <button type="button" class="wizz-link" (click)="step.set('terms')">
-                  Privacy Policy
-                </button>
-                and
-                <button type="button" class="wizz-link" (click)="step.set('terms')">
-                  Terms &amp; Conditions
-                </button>
-              </span>
-            </label>
-            @if (submitted() && !agreedTerms()) {
-              <p class="inline-err">Please accept the Privacy Policy and Terms &amp; Conditions</p>
-            }
-
-            <wizz-button type="submit" size="lg" [fullWidth]="true">
-              Finish Registration
-            </wizz-button>
-
-            <p class="mobile-signin-prompt">
-              Have an account?
-              <button type="button" class="wizz-link" (click)="goToLogin()">Login</button>
-            </p>
-          </form>
+          <app-individual-signup-form
+            [brandName]="theme.brandName()"
+            [(firstName)]="firstName"
+            [(middleName)]="middleName"
+            [(lastName)]="lastName"
+            [(email)]="email"
+            [(dialCode)]="dialCode"
+            [(phone)]="phone"
+            [(nationality)]="nationality"
+            [(dob)]="dob"
+            [(password)]="password"
+            [(confirmPassword)]="confirmPassword"
+            [(agreedTerms)]="agreedTerms"
+            [submitted]="submitted()"
+            [emailError]="emailError()"
+            [passwordError]="passwordError()"
+            [confirmPasswordError]="confirmPasswordError()"
+            (registrationSubmitted)="submitRegistration()"
+            (termsRequested)="step.set('terms')"
+            (loginRequested)="goToLogin()"
+          />
         }
       </wizz-auth-split-shell>
     }
@@ -511,173 +360,6 @@ type SignupModalKind =
   `,
   styles: [
     `
-      .profile-type-box h1,
-      .signup-form h1 {
-        margin: 0 0 8px;
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--wizz-text);
-      }
-      .lead {
-        margin: 0 0 24px;
-        font-size: 0.85rem;
-        line-height: 1.55;
-        color: var(--wizz-text-secondary);
-      }
-      .type-cards {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-        margin-bottom: 20px;
-      }
-      .type-card {
-        text-align: left;
-        padding: 18px 16px;
-        border-radius: 14px;
-        border: 1.5px solid var(--wizz-border);
-        background: #ffffff;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        transition: all 0.16s ease;
-      }
-      .type-card--active {
-        cursor: pointer;
-        border-color: var(--wizz-primary-border);
-      }
-      .type-card--active:hover {
-        border-color: var(--wizz-primary);
-        background: var(--wizz-primary-soft);
-        transform: translateY(-2px);
-      }
-      .type-card--disabled {
-        opacity: 0.72;
-        background: #fafbfe;
-      }
-      .type-top-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .type-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: var(--wizz-primary-soft);
-        color: var(--wizz-primary);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .type-icon--muted {
-        background: #eef0f6;
-        color: var(--wizz-text-muted);
-      }
-      .type-card h3 {
-        margin: 4px 0 0;
-        font-size: 0.96rem;
-        font-weight: 700;
-        color: var(--wizz-text);
-      }
-      .type-card p {
-        margin: 0;
-        font-size: 0.76rem;
-        line-height: 1.45;
-        color: var(--wizz-text-secondary);
-      }
-      .faq-note {
-        font-size: 0.8rem;
-        color: var(--wizz-text-secondary);
-      }
-
-      .signup-form {
-        display: flex;
-        flex-direction: column;
-        gap: 13px;
-      }
-      .form-head-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-      }
-      .demo-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px 10px;
-        border-radius: 999px;
-        border: 1px solid var(--wizz-primary-border);
-        background: var(--wizz-primary-soft);
-        color: var(--wizz-primary);
-        font-size: 0.72rem;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .scenario-strip {
-        padding: 10px 12px;
-        border-radius: 10px;
-        background: #f7f6ff;
-        border: 1px dashed var(--wizz-primary-border);
-        display: flex;
-        flex-direction: column;
-        gap: 7px;
-      }
-      .scenario-label {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: var(--wizz-text-secondary);
-      }
-      .scenario-btns {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .scenario-btns button {
-        font-size: 0.7rem;
-        padding: 4px 8px;
-        border-radius: 6px;
-        border: 1px solid var(--wizz-border);
-        background: #ffffff;
-        cursor: pointer;
-        font-weight: 600;
-      }
-      .scenario-btns button:hover {
-        border-color: var(--wizz-primary);
-        color: var(--wizz-primary);
-      }
-
-      .two-col {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      .terms-check {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.78rem;
-        color: var(--wizz-text-secondary);
-        margin-top: 2px;
-      }
-      .terms-check input {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--wizz-primary);
-      }
-      .inline-err {
-        margin: -6px 0 0;
-        font-size: 0.75rem;
-        color: var(--wizz-danger);
-      }
-      .mobile-signin-prompt {
-        display: none;
-        text-align: center;
-        font-size: 0.82rem;
-        color: var(--wizz-text-secondary);
-        margin: 4px 0 0;
-      }
-
       /* Uniqueness Masked Details Grid */
       .masked-grid {
         background: var(--wizz-surface-muted);
@@ -825,8 +507,6 @@ type SignupModalKind =
         }
       }
       @media (max-width: 640px) {
-        .type-cards,
-        .two-col,
         .masked-grid {
           grid-template-columns: 1fr;
         }
@@ -844,33 +524,26 @@ export class SignupPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly toast = inject(ToastService);
 
-  protected readonly countryOptions: readonly SelectOption[] = COUNTRIES.map((c) => ({
-    value: c.name,
-    label: c.name,
-    prefix: c.flag,
-  }));
-
   readonly step = signal<SignupStep>('profile-type');
-  readonly showScenarioBar = signal(false);
   readonly activeModal = signal<SignupModalKind>(null);
   readonly submitted = signal(false);
 
-  // Form Signals
-  readonly firstName = signal('Ajay');
+  // Parent-owned signal models persist while the individual form is mounted/unmounted.
+  readonly firstName = signal('');
   readonly middleName = signal('');
-  readonly lastName = signal('Shekhawat');
-  readonly email = signal('ajay@gmail.com');
+  readonly lastName = signal('');
+  readonly email = signal('');
   readonly dialCode = signal('+1');
-  readonly phone = signal('3142321112');
-  readonly nationality = signal('United States');
-  readonly dob = signal('1998-05-15');
-  readonly password = signal('Paygate@2026!');
-  readonly confirmPassword = signal('Paygate@2026!');
-  readonly agreedTerms = signal(true);
+  readonly phone = signal('');
+  readonly nationality = signal('');
+  readonly dob = signal('');
+  readonly password = signal('');
+  readonly confirmPassword = signal('');
+  readonly agreedTerms = signal(false);
 
   // OTP Signals
-  readonly emailOtp = signal('123456');
-  readonly mobileOtp = signal('654321');
+  readonly emailOtp = signal('');
+  readonly mobileOtp = signal('');
   readonly otpAttempts = signal(0);
   readonly emailOtpError = signal('');
   readonly mobileOtpError = signal('');
@@ -904,7 +577,6 @@ export class SignupPageComponent {
       const demo = params.get('demo');
       if (demo === 'uniqueness') {
         this.step.set('form');
-        this.showScenarioBar.set(true);
         this.activeModal.set('unique-exists');
       } else if (demo === 'verify') {
         this.step.set('form');
