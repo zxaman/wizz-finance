@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router } from '@angular/router';
 import { WizzPlatformStore } from '@wizz/remittance-data-access';
 import { AuthSplitShellComponent } from '@wizz/remittance-shell';
-import { ToastService, UiButtonComponent, UiInputComponent, UiModalComponent, UiOtpFieldComponent, WizzIconComponent } from '@wizz/ui';
+import { ToastService, UiButtonComponent, UiInputComponent, UiModalComponent } from '@wizz/ui';
 
 @Component({
   selector: 'app-forgot-password-page',
   standalone: true,
-  imports: [AuthSplitShellComponent, UiButtonComponent, UiInputComponent, UiModalComponent, UiOtpFieldComponent, WizzIconComponent],
+  imports: [AuthSplitShellComponent, UiButtonComponent, UiInputComponent, UiModalComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <wizz-auth-split-shell>
@@ -70,7 +70,7 @@ export class ForgotPasswordPageComponent {
 @Component({
   selector: 'app-reset-password-page',
   standalone: true,
-  imports: [AuthSplitShellComponent, UiButtonComponent, UiInputComponent, UiModalComponent, WizzIconComponent],
+  imports: [AuthSplitShellComponent, UiButtonComponent, UiInputComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <wizz-auth-split-shell>
