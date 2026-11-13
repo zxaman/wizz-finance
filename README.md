@@ -1,59 +1,69 @@
-# WizzFinance
+# Wizz Finance
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.11.
+Wizz Finance (Paygate) is an Angular 21 application inside an Nx monorepo. It is organized around reusable design tokens, UI components, utilities, and remittance state so product experiences can share a common foundation.
 
-## Development server
+## Run Wizz Finance locally
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+From the repository root, install dependencies and start the primary application:
 
 ```bash
-ng generate component component-name
+npm install --legacy-peer-deps
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Then open **http://localhost:4200**. The development server watches source files and rebuilds as you edit.
+
+`npm start` runs `nx serve wizz-finance`. The equivalent direct Nx command is:
 
 ```bash
-ng generate --help
+npx nx serve wizz-finance --port=4200
 ```
 
-## Building
-
-To build the project run:
+To bind the server to all interfaces (for containers, remote previews, or LAN access), use:
 
 ```bash
-ng build
+npx nx serve wizz-finance --host=0.0.0.0 --port=4200
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Build
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Build the production Wizz Finance app with:
 
 ```bash
-ng test
+npm run build
 ```
 
-## Running end-to-end tests
+This runs `nx build wizz-finance`; generated files are written to `dist/apps/wizz-finance`.
 
-For end-to-end (e2e) testing, run:
+Useful Nx commands:
 
 ```bash
-ng e2e
+npx nx show projects                 # List workspace projects
+npx nx build wizz-finance            # Build the primary app
+npx nx serve wizz-finance            # Serve the primary app on port 4200
+npx nx graph                         # Open the project dependency graph
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Workspace layout
 
-## Additional Resources
+- `apps/wizz-finance/` — Paygate application, routes, feature pages, and public assets.
+- `apps/wizz-partner-portal/` — White-label partner portal scaffold and brand-specific experience.
+- `libs/shared/design-tokens/` — Brand configuration, theme signals, and SCSS tokens.
+- `libs/shared/ui/` — Reusable standalone Angular UI components.
+- `libs/shared/utils/` — Shared validation, formatting, and product catalogs.
+- `libs/remittance/data-access/` — Remittance models and signal-based application store.
+- `libs/remittance/feature-shell/` — Shared authentication and application shells.
+- `public/` — Source design boards and flow notes used to implement the screens.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The active Paygate entry route currently presents the responsive landing page; account-entry routes are available from its Login and Sign Up actions. Feature components for subsequent flows are in the app source and are being connected incrementally.
+
+## Tech stack
+
+- Angular `^21.2.0` and Nx `^24.0.6`
+- Standalone components, Angular Signals, and lazy-ready app structure
+- `@lucide/angular` icons
+- SCSS design tokens with white-label brand configuration
+
+## Vercel deployment note
+
+Vercel should use the repository root with the build command `npm run build`. The build log that reported `Could not resolve "@angular/animations/browser"` was produced from commit `56162a1`, before the animation-provider fix was merged. The current app configuration does not register `provideAnimationsAsync()` (the UI uses CSS transitions), so redeploy the latest `main` commit rather than retrying that older source revision.
