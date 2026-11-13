@@ -61,6 +61,7 @@ The active Paygate entry route currently presents the responsive landing page; a
 
 - Angular `^21.2.0` and Nx `^24.0.6`
 - Standalone components, Angular Signals, and lazy-ready app structure
+- Zone.js is loaded as a build polyfill because the app uses `provideZoneChangeDetection()`
 - `@lucide/angular` icons
 - SCSS design tokens with white-label brand configuration
 
