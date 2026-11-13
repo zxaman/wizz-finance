@@ -8,6 +8,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
+  BankPaymentMethod,
+  CardPaymentMethod,
   PaymentMethodItem,
   WizzPlatformStore,
 } from '@wizz/remittance-data-access';
@@ -29,7 +31,7 @@ import {
 } from '@wizz/ui';
 import { maskAccountNumber } from '@wizz/utils';
 
-type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' | 'remove-primary' | 'remove-pending';
+type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' | 'remove-primary' | 'remove-pending' | 'leave-unsaved';
 
 @Component({
   selector: 'app-payment-methods-page',
@@ -45,6 +47,7 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
     UiDrawerComponent,
     UiModalComponent,
     UiTabsComponent,
+    UiAccordionComponent,
     UiEmptyStateComponent,
     WizzIconComponent,
   ],
@@ -57,13 +60,13 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
       </div>
       <wizz-tabs [tabs]="pmTabs" [(activeTab)]="activeTab" />
       @if (activeTab() === 'banks') {
-        @if (store.bankMethods().length === 0) {
+        @if (store.banks().length === 0) {
           <wizz-empty-state icon="building" title="No Bank Accounts Linked" description="Add a bank account to receive payouts or fund your WIZZ Balance." >
             <wizz-button leadingIcon="plus" (clicked)="openAddDrawer('bank')">Add Bank Account</wizz-button>
           </wizz-empty-state>
         } @else {
           <div class="pm-grid">
-            @for (bank of store.bankMethods(); track bank.id) {
+            @for (bank of store.banks(); track bank.id) {
               <article class="pm-card" (click)="openBankDetails(bank)">
                 <div class="pm-card-top">
                   <div class="pm-logo"><wizz-icon name="building" [size]="20" /></div>
@@ -75,17 +78,17 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
           </div>
         }
       } @else {
-        @if (store.cardMethods().length === 0) {
+        @if (store.cards().length === 0) {
           <wizz-empty-state icon="credit-card" title="No Cards Linked" description="Add a debit or credit card for instant payments." >
             <wizz-button leadingIcon="plus" (clicked)="openAddDrawer('card')">Add Card</wizz-button>
           </wizz-empty-state>
         } @else {
           <div class="pm-grid">
-            @for (card of store.cardMethods(); track card.id) {
+            @for (card of store.cards(); track card.id) {
               <article class="pm-card" (click)="openCardDetails(card)">
                 <div class="pm-card-top">
-                  <div class="pm-logo"><wizz-icon [name]="card.brand === 'Visa' ? 'credit-card' : 'credit-card'" [size]="20" /></div>
-                  <div class="pm-info"><strong>{{ card.brand }} {{ card.type }}</strong><small>•••• •••• •••• {{ card.last4 }}</small></div>
+                  <div class="pm-logo"><wizz-icon [name]="card.brand === 'visa' ? 'credit-card' : 'credit-card'" [size]="20" /></div>
+                  <div class="pm-info"><strong>{{ card.brand }} {{ card.issuer }}</strong><small>•••• •••• •••• {{ card.last4 }}</small></div>
                   @if (card.isPrimary) { <wizz-badge tone="verified">Primary</wizz-badge> }
                 </div>
               </article>
@@ -128,7 +131,7 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
                 <div><small>Country</small><strong>{{ bank.country }}</strong></div>
               </div>
             </wizz-accordion>
-            @if (!bank.isVerified) {
+            @if (!bank.verified) {
               <div class="verify-banner"><wizz-icon name="alert-triangle" [size]="18" /><span>Micro-deposit verification pending</span></div>
               <wizz-button [fullWidth]="true" (clicked)="activeModal.set('micro-deposit')">Verify Now</wizz-button>
             }
@@ -142,17 +145,17 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
       <wizz-drawer [open]="!!selectedCard()" title="Card Details" [width]="500" (closed)="selectedCard.set(null)">
         @if (selectedCard(); as card) {
           <div class="drawer-stack">
-            <div class="pm-logo-large"><wizz-icon [name]="card.brand === 'Visa' ? 'credit-card' : 'credit-card'" [size]="32" /></div>
-            <div class="pm-info-large"><strong>{{ card.brand }} {{ card.type }}</strong><span>•••• •••• •••• {{ card.last4 }}</span></div>
+            <div class="pm-logo-large"><wizz-icon [name]="card.brand === 'visa' ? 'credit-card' : 'credit-card'" [size]="32" /></div>
+            <div class="pm-info-large"><strong>{{ card.brand }} {{ card.issuer }}</strong><span>•••• •••• •••• {{ card.last4 }}</span></div>
             <wizz-accordion title="CARD DETAILS">
               <div class="detail-grid">
                 <div><small>Cardholder Name</small><strong>{{ card.cardHolderName }}</strong></div>
                 <div><small>Expiry Date</small><strong>{{ card.expiry }}</strong></div>
-                <div><small>Billing Address</small><strong>{{ card.billingAddress }}</strong></div>
+                <div><small>Billing Address</small><strong>{{ card.billingAddress.line1 }}, {{ card.billingAddress.city }}, {{ card.billingAddress.state }} {{ card.billingAddress.zipCode }}</strong></div>
                 <div><small>Country</small><strong>{{ card.country }}</strong></div>
               </div>
             </wizz-accordion>
-            @if (!card.isVerified) {
+            @if (!card.verified) {
               <div class="verify-banner"><wizz-icon name="alert-triangle" [size]="18" /><span>Small charge verification pending</span></div>
               <wizz-button [fullWidth]="true" (clicked)="activeModal.set('small-charge')">Verify Now</wizz-button>
             }
@@ -181,6 +184,12 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
       <wizz-modal [open]="activeModal() === 'remove-pending'" tone="warning" title="Pending Transaction Guard" subtitle="This method is linked to an active transaction (Ref: TX-88291). Please cancel the transaction first." (closed)="activeModal.set(null)">
         <div drawer-footer><wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Got It</wizz-button></div>
       </wizz-modal>
+      <wizz-modal [open]="activeModal() === 'leave-unsaved'" tone="warning" title="Discard Payment Method?" subtitle="Your unsaved payment method details will be lost." (closed)="activeModal.set(null)">
+        <div drawer-footer>
+          <wizz-button variant="outline" [fullWidth]="true" (clicked)="activeModal.set(null)">Keep Editing</wizz-button>
+          <wizz-button variant="danger" [fullWidth]="true" (clicked)="discardAddMethod()">Discard</wizz-button>
+        </div>
+      </wizz-modal>
     </wizz-app-shell>
   `,
   styles: [
@@ -188,7 +197,7 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
       .pm-header { margin-bottom: 24px; }
       .pm-header h1 { margin: 0; font-size: 1.45rem; font-weight: 800; }
       .sub { margin: 4px 0 0; font-size: 0.84rem; color: var(--wizz-text-secondary); }
-      .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+      .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 16px; }
       .pm-card { border: 1px solid var(--wizz-border); border-radius: 14px; padding: 16px 18px; background: #ffffff; cursor: pointer; transition: all 0.16s ease; }
       .pm-card:hover { border-color: var(--wizz-primary); box-shadow: var(--wizz-shadow-sm); transform: translateY(-2px); }
       .pm-card-top { display: flex; align-items: center; gap: 10px; }
@@ -207,13 +216,19 @@ type PaymentModal = null | 'micro-deposit' | 'small-charge' | 'remove-confirm' |
       .verify-banner { display: flex; align-items: center; gap: 8px; padding: 12px; border-radius: 10px; background: var(--wizz-surface-muted); font-size: 0.82rem; color: var(--wizz-amber-dark); }
       .reason-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
       .sec-label { font-size: 0.7rem; font-weight: 700; color: var(--wizz-text-muted); }
+      @media (max-width: 480px) {
+        .pm-header { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+        .two-col, .detail-grid { grid-template-columns: 1fr; }
+        .verify-banner { align-items: flex-start; }
+      }
     `,
   ],
 })
 export class PaymentMethodsPageComponent {
   protected readonly store = inject(WizzPlatformStore);
+  protected readonly maskAccountNumber = maskAccountNumber;
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastService);
+  protected readonly toast = inject(ToastService);
   protected readonly countryOptions: readonly SelectOption[] = [{ value: 'United States', label: 'United States' }, { value: 'United Kingdom', label: 'United Kingdom' }, { value: 'India', label: 'India' }, { value: 'United Arab Emirates', label: 'United Arab Emirates' }];
   protected readonly accountTypeOptions: readonly SelectOption[] = [{ value: 'Savings Account', label: 'Savings Account' }, { value: 'Checking Account', label: 'Checking Account' }];
   protected readonly removeReasonOptions: readonly SelectOption[] = [{ value: 'duplicate', label: 'Duplicate Method' }, { value: 'unused', label: 'Unused' }, { value: 'security', label: 'Security / Fraud' }, { value: 'other', label: 'Other' }];
@@ -235,8 +250,8 @@ export class PaymentMethodsPageComponent {
   readonly cardHolderName = signal('');
   readonly cardBillingAddress = signal('');
   readonly cardIsPrimary = signal(false);
-  readonly selectedBank = signal<PaymentMethodItem | null>(null);
-  readonly selectedCard = signal<PaymentMethodItem | null>(null);
+  readonly selectedBank = signal<BankPaymentMethod | null>(null);
+  readonly selectedCard = signal<CardPaymentMethod | null>(null);
   readonly activeModal = signal<PaymentModal>(null);
   readonly removeReason = signal<'duplicate' | 'unused' | 'security' | 'other'>('unused');
   readonly verifyAmt1 = signal('0.03');
@@ -256,31 +271,45 @@ export class PaymentMethodsPageComponent {
     this.showAddDrawer.set(true);
   }
 
+  discardAddMethod(): void {
+    this.activeModal.set(null);
+    this.showAddDrawer.set(false);
+    this.bankName.set('');
+    this.bankHolderName.set('');
+    this.bankAccountNumber.set('');
+    this.bankRoutingNumber.set('');
+    this.cardNumber.set('');
+    this.cardExpiry.set('');
+    this.cardCvv.set('');
+    this.cardHolderName.set('');
+    this.cardBillingAddress.set('');
+  }
+
   submitAddMethod(): void {
     if (this.addMode() === 'bank') {
       if (!this.bankHolderName().trim()) { this.bankHolderError.set('Account holder name must match'); return; }
-      this.store.addBankMethod({ bankName: this.bankName() || 'Linked Bank', accountHolderName: this.bankHolderName().trim(), accountNumber: this.bankAccountNumber().trim(), routingNumber: this.bankRoutingNumber().trim(), accountType: this.bankAccountType(), country: this.bankCountry(), isPrimary: this.store.bankMethods().length === 0, isVerified: false });
+      this.store.addBankMethod({ bankName: this.bankName() || 'Linked Bank', accountHolderName: this.bankHolderName().trim(), accountNumber: this.bankAccountNumber().trim(), routingNumber: this.bankRoutingNumber().trim(), accountType: this.bankAccountType(), country: this.bankCountry(), setAsDefault: this.store.banks().length === 0 });
     } else {
-      this.store.addCardMethod({ brand: 'Visa', type: 'Debit', last4: this.cardNumber().slice(-4), cardHolderName: this.cardHolderName().trim(), expiry: this.cardExpiry(), billingAddress: this.cardBillingAddress(), country: this.cardCountry(), isPrimary: this.cardIsPrimary(), isVerified: false });
+      this.store.addCardMethod({ country: this.cardCountry(), issuer: 'Visa / Mastercard', cardHolderName: this.cardHolderName().trim(), cardNumber: this.cardNumber(), expiry: this.cardExpiry(), brand: 'visa', billingAddress: { country: this.cardCountry(), line1: this.cardBillingAddress(), line2: '', city: '', state: '', zipCode: '' }, setAsDefault: this.cardIsPrimary() });
     }
     this.showAddDrawer.set(false);
     this.toast.show('Payment method added successfully', 'success');
   }
 
-  openBankDetails(bank: PaymentMethodItem): void { this.selectedBank.set(bank); }
-  openCardDetails(card: PaymentMethodItem): void { this.selectedCard.set(card); }
-  setPrimaryBank(bank: PaymentMethodItem): void { this.store.setPrimaryMethod('bank', bank.id); this.toast.show('Bank set as primary', 'success'); this.selectedBank.set(null); }
-  setPrimaryCard(card: PaymentMethodItem): void { this.store.setPrimaryMethod('card', card.id); this.toast.show('Card set as primary', 'success'); this.selectedCard.set(null); }
-  completeMicroDeposit(): void { const b = this.selectedBank(); if (b) { this.store.verifyMethod(b.id, 'bank'); this.toast.show('Bank account verified successfully', 'success'); } this.activeModal.set(null); }
-  completeSmallCharge(): void { const c = this.selectedCard(); if (c) { this.store.verifyMethod(c.id, 'card'); this.toast.show('Card verified successfully', 'success'); } this.activeModal.set(null); }
+  openBankDetails(bank: BankPaymentMethod): void { this.selectedBank.set(bank); }
+  openCardDetails(card: CardPaymentMethod): void { this.selectedCard.set(card); }
+  setPrimaryBank(bank: PaymentMethodItem): void { this.store.forceSetPrimaryPaymentMethod(bank.id); this.toast.show('Bank set as primary', 'success'); this.selectedBank.set(null); }
+  setPrimaryCard(card: PaymentMethodItem): void { this.store.forceSetPrimaryPaymentMethod(card.id); this.toast.show('Card set as primary', 'success'); this.selectedCard.set(null); }
+  completeMicroDeposit(): void { const b = this.selectedBank(); if (b) { this.store.verifyPaymentMethod(b.id); this.toast.show('Bank account verified successfully', 'success'); } this.activeModal.set(null); }
+  completeSmallCharge(): void { const c = this.selectedCard(); if (c) { this.store.verifyPaymentMethod(c.id); this.toast.show('Card verified successfully', 'success'); } this.activeModal.set(null); }
   executeRemove(): void {
     const item = this.selectedBank() || this.selectedCard();
     if (!item) return;
     if (item.isPrimary) { this.activeModal.set('remove-primary'); return; }
-    if (item.hasPendingTransaction) { this.activeModal.set('remove-pending'); return; }
-    const type = item.type === 'bank' ? 'bank' : 'card';
+    if (item.hasPendingTx) { this.activeModal.set('remove-pending'); return; }
+    const type = item.kind === 'bank' ? 'bank' : 'card';
     const id = item.id;
-    this.store.removeMethod(type, id);
+    this.store.removePaymentMethod(id);
     this.activeModal.set(null);
     this.selectedBank.set(null);
     this.selectedCard.set(null);

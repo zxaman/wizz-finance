@@ -48,18 +48,15 @@ type LoginModalKind =
   template: `
     <wizz-auth-split-shell
       backLabel="Back To Home"
-      altActionLabel="Create Account Now"
+      altPromptText="Don't have an account?"
+      altActionLabel="Create Account"
       (backClicked)="go('/')"
       (altActionClicked)="go('/auth/signup')"
     >
       <div class="login-box">
         <div class="head-row">
           <h1>Login to your {{ theme.brandName() }} account</h1>
-          <button
-            type="button"
-            class="demo-chip"
-            (click)="showScenarioBar.update(v => !v)"
-          >
+          <button type="button" class="demo-chip" (click)="showScenarioBar.update((v) => !v)">
             <wizz-icon name="sparkles" [size]="13" />
             <span>States</span>
           </button>
@@ -122,7 +119,9 @@ type LoginModalKind =
             type="email"
             placeholder="ajay@gmail.com"
             [(value)]="email"
-            [error]="submitted() && !isValidEmailFn(email()) ? 'Please enter a valid email address' : ''"
+            [error]="
+              submitted() && !isValidEmailFn(email()) ? 'Please enter a valid email address' : ''
+            "
           />
 
           <div class="pwd-group">
@@ -140,11 +139,6 @@ type LoginModalKind =
 
           <wizz-button type="submit" size="lg" [fullWidth]="true">Login</wizz-button>
         </form>
-
-        <p class="mobile-signup-prompt">
-          Don't have an account?
-          <a routerLink="/auth/signup" class="wizz-link">Create Account</a>
-        </p>
       </div>
     </wizz-auth-split-shell>
 
@@ -214,12 +208,20 @@ type LoginModalKind =
           <span>See your primary account email address</span>
         </label>
         <label class="perm-row">
-          <input type="checkbox" [ngModel]="oauthConsentGranted()" (ngModelChange)="oauthConsentGranted.set($event)" />
+          <input
+            type="checkbox"
+            [ngModel]="oauthConsentGranted()"
+            (ngModelChange)="oauthConsentGranted.set($event)"
+          />
           <span>Associate you with your personal profile info</span>
         </label>
 
         <label class="perm-row perm-row--highlight">
-          <input type="checkbox" [ngModel]="simulateNewSocialUser()" (ngModelChange)="simulateNewSocialUser.set($event)" />
+          <input
+            type="checkbox"
+            [ngModel]="simulateNewSocialUser()"
+            (ngModelChange)="simulateNewSocialUser.set($event)"
+          />
           <span>Simulate first-time social user (triggers Screen 07/08 profile setup)</span>
         </label>
       </div>
@@ -258,7 +260,11 @@ type LoginModalKind =
         <span>Try logging in after</span>
         <strong>{{ formattedLockTimer() }}</strong>
       </div>
-      <wizz-button [fullWidth]="true" [disabled]="lockSeconds() > 0" (clicked)="activeModal.set(null)">
+      <wizz-button
+        [fullWidth]="true"
+        [disabled]="lockSeconds() > 0"
+        (clicked)="activeModal.set(null)"
+      >
         Try Again
       </wizz-button>
     </wizz-modal>
@@ -371,7 +377,9 @@ type LoginModalKind =
         font-size: 0.84rem;
         font-weight: 600;
         cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
       }
       .social-btn:hover {
         transform: translateY(-1px);
@@ -427,14 +435,6 @@ type LoginModalKind =
         font-weight: 600;
         color: var(--wizz-primary);
       }
-      .mobile-signup-prompt {
-        display: none;
-        text-align: center;
-        margin-top: 16px;
-        font-size: 0.82rem;
-        color: var(--wizz-text-secondary);
-      }
-
       /* Modals */
       .mfa-asterisk {
         width: 48px;
@@ -524,11 +524,6 @@ type LoginModalKind =
         gap: 10px;
       }
 
-      @media (max-width: 959px) {
-        .mobile-signup-prompt {
-          display: block;
-        }
-      }
       @media (max-width: 480px) {
         .two-btns {
           grid-template-columns: 1fr;

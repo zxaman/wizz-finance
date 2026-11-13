@@ -5,6 +5,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   BeneficiaryItem,
@@ -20,12 +21,13 @@ import {
   UiButtonComponent,
   UiDrawerComponent,
   UiInputComponent,
+  UiEmptyStateComponent,
   UiModalComponent,
   UiSelectComponent,
   UiStepperComponent,
   WizzIconComponent,
 } from '@wizz/ui';
-import { COUNTRIES, CURRENCIES, formatMoney, maskAccountNumber, SelectOption as UtilsSelectOption } from '@wizz/utils';
+import { CURRENCIES, formatMoney, maskAccountNumber } from '@wizz/utils';
 
 type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' | 'failure' | 'receipt';
 
@@ -33,10 +35,12 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
   selector: 'app-send-money-page',
   standalone: true,
   imports: [
+    FormsModule,
     AppShellComponent,
     UiButtonComponent,
     UiBadgeComponent,
     UiInputComponent,
+    UiEmptyStateComponent,
     UiSelectComponent,
     UiDrawerComponent,
     UiModalComponent,
@@ -57,8 +61,8 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
           </div>
           <div class="fx-breakdown">
             <div class="fx-row-sm"><span>Live FX Rate</span><strong>1 USD = {{ fxRate() }} {{ receiveCurrency() }}</strong></div>
-            <div class="fx-row-sm"><span>Transaction Fee</span><strong>${{ feeUsd() }}</strong></div>
-            <div class="fx-row-sm"><span>Total Amount</span><strong>${{ totalSendUsd() }}</strong></div>
+            <div class="fx-row-sm"><span>Transaction Fee</span><strong>&#36;{{ feeUsd() }}</strong></div>
+            <div class="fx-row-sm"><span>Total Amount</span><strong>&#36;{{ totalSendUsd() }}</strong></div>
           </div>
           <div class="fx-warning"><wizz-icon name="alert-circle" [size]="16" /><span>FX rates lock for 30 seconds after proceeding.</span></div>
           <div drawer-footer><wizz-button [fullWidth]="true" (clicked)="advanceStep()">Continue</wizz-button></div>
@@ -76,7 +80,7 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
               @for (ben of filteredBeneficiaries(); track ben.id) {
                 <div class="ben-item" [class.ben-item--selected]="selectedBeneficiary()?.id === ben.id" (click)="selectBeneficiary(ben)">
                   <div class="ben-ident"><span class="ben-avatar">{{ initials(ben.firstName + ' ' + ben.lastName) }}</span><div><strong>{{ ben.firstName }} {{ ben.lastName }}</strong><small>{{ ben.bank.bankName }} · {{ maskAccountNumber(ben.bank.accountNumber, 'compact') }}</small></div></div>
-                  <wizz-icon [name]="selectedBeneficiary()?.id === ben.id ? 'check-circle' : 'radio'" [size]="20" />
+                  <wizz-icon [name]="selectedBeneficiary()?.id === ben.id ? 'check-circle' : 'chevron-right'" [size]="20" />
                 </div>
               }
             </div>
@@ -88,11 +92,11 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
         <div class="drawer-stack">
           <div class="send-from-grid">
             <div class="send-from-card" [class.send-from-card--selected]="selectedSource() === 'balance'" (click)="selectSource('balance')"><wizz-icon name="wallet" [size]="24" /><div><strong>WIZZ Balance</strong><small>{{ formatMoneyFn(store.availableWalletUsd(), 'USD') }}</small></div></div>
-            @for (bank of store.bankMethods(); track bank.id) {
+            @for (bank of store.banks(); track bank.id) {
               <div class="send-from-card" [class.send-from-card--selected]="selectedSource() === ('bank-' + bank.id)" (click)="selectSource('bank-' + bank.id)"><wizz-icon name="building" [size]="24" /><div><strong>{{ bank.bankName }}</strong><small>{{ maskAccountNumber(bank.accountNumber, 'compact') }}</small></div>@if (bank.isPrimary) { <wizz-badge tone="verified">Primary</wizz-badge> }</div>
             }
-            @for (card of store.cardMethods(); track card.id) {
-              <div class="send-from-card" [class.send-from-card--selected]="selectedSource() === ('card-' + card.id)" (click)="selectSource('card-' + card.id)"><wizz-icon [name]="card.brand === 'Visa' ? 'credit-card' : 'credit-card'" [size]="24" /><div><strong>{{ card.brand }} {{ card.type }}</strong><small>{{ maskAccountNumber(card.accountNumber, 'compact') }}</small></div>@if (card.isPrimary) { <wizz-badge tone="verified">Primary</wizz-badge> }</div>
+            @for (card of store.cards(); track card.id) {
+              <div class="send-from-card" [class.send-from-card--selected]="selectedSource() === ('card-' + card.id)" (click)="selectSource('card-' + card.id)"><wizz-icon [name]="card.brand === 'visa' ? 'credit-card' : 'credit-card'" [size]="24" /><div><strong>{{ card.brand }} {{ card.issuer }}</strong><small>{{ maskAccountNumber(card.last4, 'compact') }}</small></div>@if (card.isPrimary) { <wizz-badge tone="verified">Primary</wizz-badge> }</div>
             }
           </div>
         </div>
@@ -109,7 +113,7 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
         <div class="drawer-stack">
           <div class="review-header"><strong>Review Transaction</strong><small>Compliance Summary</small></div>
           <div class="review-grid">
-            <div><small>Sending</small><strong>${{ totalSendUsd() }} USD</strong></div>
+            <div><small>Sending</small><strong>&#36;{{ totalSendUsd() }} USD</strong></div>
             <div><small>Receiving</small><strong>{{ receiveAmount() }} {{ receiveCurrency() }}</strong></div>
             <div><small>Beneficiary</small><strong>{{ selectedBeneficiary()?.firstName }} {{ selectedBeneficiary()?.lastName }}</strong></div>
             <div><small>Source</small><strong>{{ sourceLabel() }}</strong></div>
@@ -123,7 +127,7 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
       <wizz-modal [open]="activeModal() === 'send-from-unverified'" tone="warning" title="Unverified Payment Method" subtitle="The selected payment method is unverified. Please verify it first or choose another." (closed)="activeModal.set(null)">
         <div drawer-footer><wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Got It</wizz-button></div>
       </wizz-modal>
-      <wizz-modal [open]="activeModal() === 'fx-changed'" tone="warning" title="FX Rate Changed" subtitle="The exchange rate shifted during processing. The new total is ${{ newTotalUsd() }} USD." (closed)="activeModal.set(null)">
+      <wizz-modal [open]="activeModal() === 'fx-changed'" tone="warning" title="FX Rate Changed" subtitle="The exchange rate shifted during processing. The new total is &#36;{{ newTotalUsd() }} USD." (closed)="activeModal.set(null)">
         <div drawer-footer><wizz-button variant="outline" [fullWidth]="true" (clicked)="activeModal.set(null); submitTransaction()">Accept New Rate</wizz-button><wizz-button variant="danger-outline" [fullWidth]="true" (clicked)="activeModal.set(null)">Cancel Transaction</wizz-button></div>
       </wizz-modal>
       <wizz-modal [open]="activeModal() === 'under-review'" tone="info" title="Transaction Under Review" subtitle="Our compliance team is reviewing your transfer. You will be notified shortly." (closed)="activeModal.set(null)">
@@ -132,7 +136,7 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
       <wizz-modal [open]="activeModal() === 'failure'" tone="danger" title="Transaction Failed" subtitle="The transfer could not be processed. Please check your source balance or try again later." (closed)="activeModal.set(null)">
         <div drawer-footer><wizz-button [fullWidth]="true" (clicked)="activeModal.set(null); wizardStep.set(0)">Try Again</wizz-button></div>
       </wizz-modal>
-      <wizz-modal [open]="activeModal() === 'receipt'" tone="verified" title="Transaction Request Received" subtitle="Reference: {{ receiptId() }} | Status: Processing" (closed)="activeModal.set(null)">
+      <wizz-modal [open]="activeModal() === 'receipt'" tone="success" title="Transaction Request Received" subtitle="Reference: {{ receiptId() }} | Status: Processing" (closed)="activeModal.set(null)">
         <div class="receipt-stack">
           <div class="receipt-amount"><span>Amount Delivered</span><strong>{{ receiveAmount() }} {{ receiveCurrency() }}</strong><wizz-badge tone="pending">Processing</wizz-badge></div>
           <div class="kv-row"><span>Beneficiary</span><strong>{{ selectedBeneficiary()?.firstName }} {{ selectedBeneficiary()?.lastName }}</strong></div>
@@ -188,6 +192,17 @@ type SendModal = null | 'send-from-unverified' | 'fx-changed' | 'under-review' |
       .receipt-amount strong { font-size: 1.5rem; }
       .kv-row { display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--wizz-border); font-size: 0.84rem; }
       .kv-row span { color: var(--wizz-text-muted); }
+      @media (max-width: 640px) {
+        .fx-hero { align-items: stretch; flex-direction: column; gap: 12px; padding: 14px; }
+        .fx-row { min-width: 0; width: 100%; }
+        .fx-row > span:first-child { flex: 0 0 auto; }
+        .fx-arrow { align-self: center; transform: rotate(90deg); }
+        .send-from-grid, .review-grid { grid-template-columns: 1fr; }
+        .send-from-card { min-width: 0; }
+        .receipt-amount { align-items: flex-start; flex-direction: column; gap: 8px; }
+        .kv-row { align-items: flex-start; gap: 12px; }
+        .kv-row strong { text-align: right; overflow-wrap: anywhere; }
+      }
     `,
   ],
 })
@@ -197,6 +212,7 @@ export class SendMoneyPageComponent {
   private readonly toast = inject(ToastService);
   protected readonly initials = (name: string) => name.split(' ').map(n => n[0] || '').join('').toUpperCase().substring(0, 2);
   protected readonly formatMoneyFn = formatMoney;
+  protected readonly maskAccountNumber = maskAccountNumber;
   protected readonly wizardSteps = [{ id: 'amount', label: 'Amount' }, { id: 'beneficiary', label: 'Beneficiary' }, { id: 'source', label: 'Source' }, { id: 'details', label: 'Details' }, { id: 'review', label: 'Review' }];
   protected readonly currencyOptions: readonly SelectOption[] = CURRENCIES.map(c => ({ value: c.code, label: c.name, prefix: c.symbol }));
   protected readonly purposeOptions: readonly SelectOption[] = [{ value: 'goods', label: 'Goods / Services' }, { value: 'family', label: 'Family Support' }, { value: 'investment', label: 'Investment' }, { value: 'other', label: 'Other' }];
@@ -211,7 +227,7 @@ export class SendMoneyPageComponent {
   readonly feeUsd = signal(3.45);
   readonly beneficiarySearch = signal('');
   readonly selectedBeneficiary = signal<BeneficiaryItem | null>(null);
-  readonly selectedSource = signal<'balance' | string>(this.store.bankMethods().length > 0 ? 'bank-' + this.store.bankMethods()[0].id : 'balance');
+  readonly selectedSource = signal<'balance' | string>(this.store.banks().length > 0 ? 'bank-' + this.store.banks()[0].id : 'balance');
   readonly purpose = signal<'goods' | 'family' | 'investment' | 'other'>('goods');
   readonly description = signal('Invoice #1234 Payment');
   readonly totalSendUsd = computed(() => { const amt = Number(this.sendAmount()) || 0; return amt + this.feeUsd(); });
@@ -226,12 +242,12 @@ export class SendMoneyPageComponent {
     if (src === 'balance') return 'WIZZ Balance';
     const parts = src.split('-');
     if (parts[0] === 'bank') {
-      const b = this.store.bankMethods().find(x => x.id === parts[1]);
+      const b = this.store.banks().find(x => x.id === parts[1]);
       return b ? `${b.bankName} (${maskAccountNumber(b.accountNumber, 'compact')})` : '';
     }
     if (parts[0] === 'card') {
-      const c = this.store.cardMethods().find(x => x.id === parts[1]);
-      return c ? `${c.brand} ${c.type} (•••• •••• •••• ${c.last4})` : '';
+      const c = this.store.cards().find(x => x.id === parts[1]);
+      return c ? `${c.brand} ${c.issuer} (•••• •••• •••• ${c.last4})` : '';
     }
     return '';
   });
@@ -246,8 +262,8 @@ export class SendMoneyPageComponent {
         const parts = src.split('-');
         const type = parts[0];
         const id = parts[1];
-        const item = type === 'bank' ? this.store.bankMethods().find(x => x.id === id) : this.store.cardMethods().find(x => x.id === id);
-        if (item && !item.isVerified) { this.activeModal.set('send-from-unverified'); return; }
+        const item = type === 'bank' ? this.store.banks().find(x => x.id === id) : this.store.cards().find(x => x.id === id);
+        if (item && !item.verified) { this.activeModal.set('send-from-unverified'); return; }
       }
     }
     if (this.wizardStep() < 4) this.wizardStep.update(s => s + 1);

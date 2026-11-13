@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '@wizz/design-tokens';
 import { BrandLogoComponent, WizzIconComponent } from '@wizz/ui';
@@ -47,10 +40,22 @@ const PROMO_SLIDES: readonly PromoSlide[] = [
     <div class="auth-page">
       <!-- Mobile Header (< 960px) -->
       <header class="auth-mobile-top">
-        <button type="button" class="mobile-back" (click)="backClicked.emit()">
-          <wizz-icon name="chevron-left" [size]="20" />
-          <wizz-brand-logo size="sm" />
-        </button>
+        <div class="mobile-auth-bar">
+          <button type="button" class="mobile-back" (click)="backClicked.emit()">
+            <wizz-icon name="chevron-left" [size]="20" />
+            <wizz-brand-logo size="sm" />
+          </button>
+          @if (altActionLabel()) {
+            <div class="mobile-alt-action">
+              @if (altPromptText()) {
+                <span>{{ altPromptText() }}</span>
+              }
+              <button type="button" class="mobile-alt-link" (click)="altActionClicked.emit()">
+                {{ altActionLabel() }}
+              </button>
+            </div>
+          }
+        </div>
       </header>
 
       <div class="auth-grid">
@@ -61,6 +66,8 @@ const PROMO_SLIDES: readonly PromoSlide[] = [
               src="/assets/auth-promo.jpg"
               alt="Global multi-currency accounts preview"
               class="promo-img"
+              fetchpriority="high"
+              decoding="async"
             />
           </div>
 
@@ -113,8 +120,8 @@ const PROMO_SLIDES: readonly PromoSlide[] = [
           </div>
 
           <footer class="legal-footer">
-            <a routerLink="/terms">Terms &amp; Conditions</a>
-            <a routerLink="/terms" [queryParams]="{ tab: 'privacy' }">Privacy Policies</a>
+            <a routerLink="/legal" [queryParams]="{ view: 'terms' }">Terms &amp; Conditions</a>
+            <a routerLink="/legal" [queryParams]="{ view: 'privacy' }">Privacy Policies</a>
           </footer>
         </main>
       </div>
@@ -130,7 +137,42 @@ const PROMO_SLIDES: readonly PromoSlide[] = [
       }
       .auth-mobile-top {
         display: none;
-        padding: 16px 20px 8px;
+        padding: 14px 20px 8px;
+      }
+      .mobile-auth-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .mobile-alt-action {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        min-width: 0;
+        color: var(--wizz-text-secondary);
+        font-size: 0.74rem;
+        text-align: right;
+      }
+      .mobile-alt-link {
+        flex: 0 0 auto;
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 10px;
+        background: var(--wizz-primary-soft);
+        color: var(--wizz-primary);
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .mobile-alt-link:focus-visible,
+      .mobile-back:focus-visible,
+      .alt-link:focus-visible,
+      .back-pill:focus-visible,
+      .dot:focus-visible {
+        outline: 2px solid var(--wizz-primary);
+        outline-offset: 3px;
       }
       .mobile-back {
         display: inline-flex;
@@ -300,6 +342,26 @@ const PROMO_SLIDES: readonly PromoSlide[] = [
         }
         .legal-footer {
           justify-content: center;
+        }
+      }
+      @media (max-width: 380px) {
+        .auth-mobile-top {
+          padding-inline: 12px;
+        }
+        .mobile-auth-bar {
+          gap: 6px;
+        }
+        .mobile-alt-action {
+          gap: 4px;
+        }
+        .mobile-alt-action > span {
+          display: none;
+        }
+        .mobile-alt-link {
+          padding: 7px 8px;
+        }
+        .auth-grid {
+          padding-inline: 14px;
         }
       }
     `,

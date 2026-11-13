@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AuthSplitShellComponent,
@@ -30,7 +30,7 @@ import {
   template: `
     <wizz-auth-split-shell>
       <div class="auth-split-left">
-        <wizz-brand-logo [brand]="'partner'" />
+        <wizz-brand-logo [customLabel]="'Partner'" />
         <div class="promo-content">
           <h2>Local Accounts in Global Currencies</h2>
           <p>Partner-branded white-label remittance portal for your clients.</p>
@@ -59,10 +59,10 @@ import {
 
               <div class="social-grid">
                 <button type="button" class="social-btn" (click)="socialLogin('google')">
-                  <wizz-icon name="google" [size]="18" /> Google
+                  <wizz-icon name="globe" [size]="18" /> Google
                 </button>
                 <button type="button" class="social-btn" (click)="socialLogin('apple')">
-                  <wizz-icon name="apple" [size]="18" /> Apple
+                  <wizz-icon name="user" [size]="18" /> Apple
                 </button>
               </div>
             </div>

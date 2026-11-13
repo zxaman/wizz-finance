@@ -38,7 +38,7 @@ import { COUNTRIES, LANDING_COVERAGE_COUNTRIES } from '@wizz/utils';
                 class="company-trigger"
                 [attr.aria-expanded]="companyMenuOpen()"
                 aria-haspopup="true"
-                (click)="companyMenuOpen.update(v => !v)"
+                (click)="companyMenuOpen.update((v) => !v)"
               >
                 <span>Company</span>
                 <wizz-icon name="chevron-down" [size]="15" />
@@ -46,17 +46,25 @@ import { COUNTRIES, LANDING_COVERAGE_COUNTRIES } from '@wizz/utils';
 
               @if (companyMenuOpen()) {
                 <div class="company-dropdown" (mouseleave)="companyMenuOpen.set(false)">
-                  <a routerLink="/dashboard" class="drop-link">
-                    <wizz-icon name="grid" [size]="15" /> Live Product Dashboard
+                  <a href="#coverage" class="drop-link" (click)="companyMenuOpen.set(false)">
+                    <wizz-icon name="globe" [size]="15" /> Global Coverage
                   </a>
-                  <a routerLink="/send-money" class="drop-link">
-                    <wizz-icon name="send" [size]="15" /> Remittance Calculator
+                  <a href="#security" class="drop-link" (click)="companyMenuOpen.set(false)">
+                    <wizz-icon name="shield-check" [size]="15" /> Security &amp; Compliance
                   </a>
-                  <a routerLink="/onboarding" class="drop-link">
-                    <wizz-icon name="shield-check" [size]="15" /> KYC &amp; Liveness Flow
+                  <a
+                    routerLink="/auth/signup"
+                    class="drop-link"
+                    (click)="companyMenuOpen.set(false)"
+                  >
+                    <wizz-icon name="user-plus" [size]="15" /> Create an Account
                   </a>
-                  <a routerLink="/terms" class="drop-link">
-                    <wizz-icon name="file-text" [size]="15" /> Legal &amp; Terms
+                  <a
+                    routerLink="/auth/login"
+                    class="drop-link"
+                    (click)="companyMenuOpen.set(false)"
+                  >
+                    <wizz-icon name="log-out" [size]="15" /> Sign In
                   </a>
                 </div>
               }
@@ -90,12 +98,14 @@ import { COUNTRIES, LANDING_COVERAGE_COUNTRIES } from '@wizz/utils';
             src="/assets/hero-phone.jpg"
             alt="Paygate mobile balance and send money preview"
             class="hero-phone-img"
+            fetchpriority="high"
+            decoding="async"
           />
         </div>
       </section>
 
       <!-- Features Section (Screen 01) -->
-      <section class="features-section">
+      <section class="features-section" id="coverage">
         <div class="features-head">
           <h2>Your Payments, Everywhere &amp; Secure</h2>
           <p>
@@ -139,12 +149,14 @@ import { COUNTRIES, LANDING_COVERAGE_COUNTRIES } from '@wizz/utils';
           </article>
 
           <!-- Card 2: 100% Secure and Compliant -->
-          <article class="feature-card">
+          <article class="feature-card" id="security">
             <div class="compliance-stage">
               <img
                 src="/assets/compliance-badges.jpg"
                 alt="ISO 27001, AICPA SOC, and PCI DSS compliance certifications"
                 class="compliance-img"
+                loading="lazy"
+                decoding="async"
               />
             </div>
 
@@ -195,8 +207,12 @@ import { COUNTRIES, LANDING_COVERAGE_COUNTRIES } from '@wizz/utils';
         <ul class="sec-list">
           <li><strong>ISO 27001 Certified</strong> — Information Security Management System</li>
           <li><strong>SOC 1 Type 1 &amp; SOC 2 Type 2</strong> — Audited internal controls</li>
-          <li><strong>PCI DSS Level 1</strong> — Tokenized card vault &amp; small-charge verification</li>
-          <li><strong>KYC &amp; 3D Liveness</strong> — Automated government ID &amp; biometric checks</li>
+          <li>
+            <strong>PCI DSS Level 1</strong> — Tokenized card vault &amp; small-charge verification
+          </li>
+          <li>
+            <strong>KYC &amp; 3D Liveness</strong> — Automated government ID &amp; biometric checks
+          </li>
         </ul>
         <wizz-button [fullWidth]="true" (clicked)="showSecurityModal.set(false)">Close</wizz-button>
       </wizz-modal>
@@ -335,6 +351,7 @@ import { COUNTRIES, LANDING_COVERAGE_COUNTRIES } from '@wizz/utils';
 
       /* Features */
       .features-section {
+        scroll-margin-top: 76px;
         max-width: 1180px;
         width: 100%;
         margin: 0 auto;
@@ -363,13 +380,16 @@ import { COUNTRIES, LANDING_COVERAGE_COUNTRIES } from '@wizz/utils';
         gap: 24px;
       }
       .feature-card {
+        scroll-margin-top: 80px;
         border: 1px solid var(--wizz-border);
         border-radius: 20px;
         background: #ffffff;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
+        transition:
+          box-shadow 0.2s ease,
+          transform 0.2s ease;
       }
       .feature-card:hover {
         box-shadow: var(--wizz-shadow-sm);

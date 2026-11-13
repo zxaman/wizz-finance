@@ -9,7 +9,7 @@ import { BrandLogoComponent, UiButtonComponent, WizzIconComponent } from '@wizz/
   template: `
     <div class="landing-hero">
       <div class="hero-content">
-        <wizz-brand-logo [brand]="'partner'" />
+        <wizz-brand-logo [customLabel]="'Partner'" />
         <h1>White-Label Remittance Portal</h1>
         <p>
           Deploy your own global payments platform powered by Wizz Finance. Fully customizable,
@@ -25,7 +25,7 @@ import { BrandLogoComponent, UiButtonComponent, WizzIconComponent } from '@wizz/
         </div>
       </div>
       <div class="hero-visual">
-        <img src="/assets/hero-phone.jpg" alt="Partner Portal Preview" />
+        <img src="/assets/hero-phone.jpg" alt="Partner Portal Preview" fetchpriority="high" decoding="async" />
       </div>
     </div>
 
@@ -42,7 +42,7 @@ import { BrandLogoComponent, UiButtonComponent, WizzIconComponent } from '@wizz/
           <p>Bank-grade encryption and compliance badges included.</p>
         </article>
         <article class="feature-card">
-          <wizz-icon name="zap" [size]="32" />
+          <wizz-icon name="sparkles" [size]="32" />
           <h3>Instant Integration</h3>
           <p>Plug-and-play white-label UI components and APIs.</p>
         </article>

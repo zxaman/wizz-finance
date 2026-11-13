@@ -117,7 +117,7 @@ type BeneficiaryModal =
           <wizz-empty-state
             icon="search"
             title="No Search Results Found"
-            [description]="'We didn\\'t find any beneficiary matching \"' + searchQuery() + '\" or active filters.'"
+            description="No matching beneficiary found. Clear the search or filters to try again."
           >
             <wizz-button size="sm" (clicked)="clearAllFilters()">Clear Search/Filters</wizz-button>
           </wizz-empty-state>
@@ -146,7 +146,7 @@ type BeneficiaryModal =
             </article>
           }
         </div>
-      </div>
+      }
 
       <wizz-drawer
         [open]="showAddDrawer()"
@@ -350,7 +350,7 @@ type BeneficiaryModal =
               </div>
             </wizz-accordion>
           </div>
-        </div>
+        }
 
         <div drawer-footer class="drawer-footer-row">
           @if (!reviewMode()) {
@@ -431,7 +431,7 @@ type BeneficiaryModal =
               </div>
             </wizz-accordion>
           </div>
-        </div>
+        }
 
         <div drawer-footer class="drawer-footer-two">
           <wizz-button variant="danger-outline" [fullWidth]="true" (clicked)="activeModal.set('confirm-remove')">
@@ -546,7 +546,7 @@ type BeneficiaryModal =
       .ben-head-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
       .empty-toggle-chip { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--wizz-primary-border); background: var(--wizz-primary-soft); color: var(--wizz-primary); font-size: 0.72rem; font-weight: 600; cursor: pointer; }
       .empty-panel { padding: 40px 0; }
-      .ben-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+      .ben-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 16px; }
       .ben-card { border: 1px solid var(--wizz-border); border-radius: 14px; padding: 16px 18px; background: #ffffff; cursor: pointer; transition: all 0.16s ease; }
       .ben-card:hover { border-color: var(--wizz-primary); box-shadow: var(--wizz-shadow-sm); transform: translateY(-2px); }
       .ben-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 10px; background: #f6f7fb; margin-bottom: 12px; }
@@ -588,8 +588,12 @@ type BeneficiaryModal =
       .chk-row { display: flex; align-items: center; gap: 9px; font-size: 0.84rem; cursor: pointer; }
       .chk-row input { width: 16px; height: 16px; accent-color: var(--wizz-primary); }
       @media (max-width: 640px) {
-        .search-box { width: 100%; flex: 1; }
+        .ben-title-search, .search-filter-group { width: 100%; min-width: 0; }
+        .search-box { width: 100%; min-width: 0; flex: 1; }
         .ben-type-selector, .two-col, .detail-grid, .drawer-footer-two { grid-template-columns: 1fr; }
+        .filter-split { min-height: 0; }
+        .drawer-footer-row { align-items: stretch; flex-direction: column; }
+        .drawer-footer-row > * { width: 100%; }
         .filter-split { grid-template-columns: 1fr; }
         .filter-cats { border-right: none; padding-right: 0; border-bottom: 1px solid var(--wizz-border); padding-bottom: 12px; flex-direction: row; overflow-x: auto; }
       }

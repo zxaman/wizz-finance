@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ThemeService } from '@wizz/design-tokens';
 import { WizzPlatformStore } from '@wizz/remittance-data-access';
@@ -19,13 +13,7 @@ import {
   UiOtpFieldComponent,
   WizzIconComponent,
 } from '@wizz/ui';
-import {
-  isAdult,
-  isValidEmail,
-  maskEmail,
-  maskPhone,
-  validateStrongPassword,
-} from '@wizz/utils';
+import { isAdult, isValidEmail, maskEmail, maskPhone, validateStrongPassword } from '@wizz/utils';
 
 type SignupStep = 'profile-type' | 'form' | 'terms' | 'success' | 'pending';
 type SignupModalKind =
@@ -131,9 +119,9 @@ type SignupModalKind =
         </main>
 
         <footer class="status-footer">
-          <a routerLink="/terms">Terms &amp; Conditions</a>
+          <a routerLink="/legal" [queryParams]="{ view: 'terms' }">Terms &amp; Conditions</a>
           <span>·</span>
-          <a routerLink="/terms">Privacy Policies</a>
+          <a routerLink="/legal" [queryParams]="{ view: 'privacy' }">Privacy Policies</a>
           <span>·</span>
           <span>{{ theme.brand().version }}</span>
         </footer>
@@ -172,7 +160,6 @@ type SignupModalKind =
             [confirmPasswordError]="confirmPasswordError()"
             (registrationSubmitted)="submitRegistration()"
             (termsRequested)="step.set('terms')"
-            (loginRequested)="goToLogin()"
           />
         }
       </wizz-auth-split-shell>
@@ -292,7 +279,9 @@ type SignupModalKind =
       <wizz-otp-field
         label="Email Verification Code"
         placeholder="Enter 6 digit Email Verification Code"
-        [sentMessage]="'A code has been sent to <strong>' + (email() || 'ajay@gmail.com') + '</strong>'"
+        [sentMessage]="
+          'A code has been sent to <strong>' + (email() || 'ajay@gmail.com') + '</strong>'
+        "
         [(value)]="emailOtp"
         [error]="emailOtpError()"
         (resend)="resendEmailCode()"
@@ -301,7 +290,13 @@ type SignupModalKind =
       <wizz-otp-field
         label="Mobile Verification Code"
         placeholder="Enter 6 digit Mobile Verification Code"
-        [sentMessage]="'A code has been sent to <strong>' + dialCode() + ' ' + (phone() || '(314) 232 1112') + '</strong>'"
+        [sentMessage]="
+          'A code has been sent to <strong>' +
+          dialCode() +
+          ' ' +
+          (phone() || '(314) 232 1112') +
+          '</strong>'
+        "
         [(value)]="mobileOtp"
         [error]="mobileOtpError()"
         (resend)="resendSmsCode()"
@@ -309,7 +304,9 @@ type SignupModalKind =
 
       <p class="otp-note">
         If you've entered the wrong phone number or email, you can go back and update them.
-        <span class="demo-hint">(Tip: enter any 6 digits e.g. 123456, or 000000 to test error)</span>
+        <span class="demo-hint"
+          >(Tip: enter any 6 digits e.g. 123456, or 000000 to test error)</span
+        >
       </p>
 
       <wizz-button [fullWidth]="true" (clicked)="verifyOtpCodes()">
@@ -325,7 +322,9 @@ type SignupModalKind =
       subtitle="You have exceeded the maximum verification attempts. Please try again later."
       (closed)="activeModal.set(null)"
     >
-      <wizz-button [fullWidth]="true" (clicked)="activeModal.set('verify-otp')">Try Again</wizz-button>
+      <wizz-button [fullWidth]="true" (clicked)="activeModal.set('verify-otp')"
+        >Try Again</wizz-button
+      >
       <wizz-button variant="ghost" [fullWidth]="true" (clicked)="finishPartialVerification()">
         Continue Anyway
       </wizz-button>

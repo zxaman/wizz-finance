@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   AuthSplitShellComponent,
@@ -6,6 +7,7 @@ import {
 } from '@wizz/remittance-shell';
 import {
   BrandLogoComponent,
+  UiBadgeComponent,
   UiButtonComponent,
   UiDrawerComponent,
   UiInputComponent,
@@ -21,9 +23,11 @@ import {
   standalone: true,
   imports: [
     RouterLink,
+    FormsModule,
     AuthSplitShellComponent,
     FocusedFlowShellComponent,
     BrandLogoComponent,
+    UiBadgeComponent,
     UiButtonComponent,
     UiDrawerComponent,
     UiInputComponent,
@@ -37,7 +41,7 @@ import {
     <!-- Screen 02 & 03 & 04 & 18 Inline -->
     <wizz-auth-split-shell>
       <div class="auth-split-left">
-        <wizz-brand-logo [brand]="'partner'" />
+        <wizz-brand-logo [customLabel]="'Partner'" />
         <div class="promo-content">
           <h2>Local Accounts in Global Currencies</h2>
           <p>Partner-branded white-label remittance portal for your clients.</p>
@@ -70,7 +74,7 @@ import {
               <wizz-input label="Password" type="password" placeholder="Min 12 chars" [(value)]="password" />
 
               <div class="terms-row">
-                <input type="checkbox" [(ngModel)]="termsAccepted" />
+                <input type="checkbox" [ngModel]="termsAccepted()" (ngModelChange)="termsAccepted.set($event)" />
                 <span>I agree to the <a routerLink="/terms" class="link">Terms &amp; Conditions</a></span>
               </div>
 
@@ -298,10 +302,8 @@ export class SignupPageComponent {
       this.modalType.set('existing');
       return;
     }
-    this.step.set(1);
-    setTimeout(() => {
-      this.step.set(2);
-    }, 1500);
+    // This prototype has no remote uniqueness API, so skip the simulated wait.
+    this.step.set(2);
   }
 
   completeSignup(): void {

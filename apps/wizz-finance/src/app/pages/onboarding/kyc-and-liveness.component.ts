@@ -65,7 +65,7 @@ export class KycPageComponent {
       <div class="processing-stack"><wizz-icon name="loader" [size]="32" /><span>Processing...</span></div>
       <div drawer-footer><wizz-button [fullWidth]="true" (clicked)="showProcessing.set(false)">Cancel</wizz-button></div>
     </wizz-modal>
-    <wizz-modal [open]="showSuccess()" tone="verified" title="Liveness Check Successful!" subtitle="Your identity is now verified." (closed)="showSuccess.set(false)">
+    <wizz-modal [open]="showSuccess()" tone="success" title="Liveness Check Successful!" subtitle="Your identity is now verified." (closed)="showSuccess.set(false)">
       <div drawer-footer><wizz-button [fullWidth]="true" (clicked)="showSuccess.set(false); go('/dashboard')">Go to Dashboard</wizz-button></div>
     </wizz-modal>
   `,
@@ -90,9 +90,7 @@ export class LivenessPageComponent {
     setTimeout(() => {
       this.showProcessing.set(false);
       this.showSuccess.set(true);
-    }, 2000);
+    }, 500);
   }
   go(path: string): void { this.router.navigate([path]); }
 }
-
-export { KycPageComponent, LivenessPageComponent };

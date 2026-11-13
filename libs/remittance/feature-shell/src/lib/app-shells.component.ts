@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from '@wizz/design-tokens';
 import { WizzPlatformStore } from '@wizz/remittance-data-access';
@@ -76,7 +69,7 @@ const DEFAULT_NAV_ITEMS: readonly NavItem[] = [
         <button
           type="button"
           class="icon-circle-btn"
-          (click)="showNotifications.update(v => !v)"
+          (click)="showNotifications.update((v) => !v)"
           aria-label="Notifications"
         >
           <wizz-icon name="bell" [size]="17" />
@@ -84,11 +77,7 @@ const DEFAULT_NAV_ITEMS: readonly NavItem[] = [
         </button>
 
         <div class="profile-dropdown-wrap">
-          <button
-            type="button"
-            class="user-pill"
-            (click)="showUserMenu.update(v => !v)"
-          >
+          <button type="button" class="user-pill" (click)="showUserMenu.update((v) => !v)">
             <span class="avatar-dot">{{ store.user().firstName[0] || 'A' }}</span>
             <span class="user-text hide-sm">{{ store.user().email }}</span>
             <wizz-icon name="chevron-down" [size]="14" />
@@ -110,7 +99,8 @@ const DEFAULT_NAV_ITEMS: readonly NavItem[] = [
                 <wizz-icon name="send" [size]="15" /> Make a Payment
               </a>
               <a
-                routerLink="/terms"
+                routerLink="/legal"
+                [queryParams]="{ view: 'terms' }"
                 [queryParams]="{ updated: '1' }"
                 class="dropdown-item"
                 (click)="showUserMenu.set(false)"
@@ -400,7 +390,7 @@ const DEFAULT_NAV_ITEMS: readonly NavItem[] = [
       }
       .flow-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
         gap: 8px;
         max-height: 55vh;
         overflow-y: auto;
@@ -487,7 +477,11 @@ export class TopNavbarComponent {
       query: { demo: 'verify' },
     },
     { code: '05', label: 'Login (Email, Password & MFA)', route: '/auth/login' },
-    { code: '06', label: 'Post-Login Update Profile Wizard', route: '/onboarding/personal-details' },
+    {
+      code: '06',
+      label: 'Post-Login Update Profile Wizard',
+      route: '/onboarding/personal-details',
+    },
     {
       code: '07',
       label: 'Social Login (Google & Apple OAuth)',
@@ -621,11 +615,15 @@ export class TopNavbarComponent {
       <div class="mobile-balance-strip">
         <div class="strip-half strip-half--transit">
           <wizz-icon name="arrow-left-right" [size]="13" />
-          <span>IN TRANSIT <strong>{{ formatUsd(store.inTransitUsd()) }}</strong></span>
+          <span
+            >IN TRANSIT <strong>{{ formatUsd(store.inTransitUsd()) }}</strong></span
+          >
         </div>
         <div class="strip-half strip-half--avail">
           <wizz-icon name="check" [size]="13" />
-          <span>AVAILABLE <strong>{{ formatUsd(store.availableWalletUsd()) }}</strong></span>
+          <span
+            >AVAILABLE <strong>{{ formatUsd(store.availableWalletUsd()) }}</strong></span
+          >
         </div>
       </div>
 
@@ -634,11 +632,7 @@ export class TopNavbarComponent {
         <aside class="sidebar">
           <nav class="sidebar-nav">
             @for (item of navItems(); track item.route) {
-              <a
-                [routerLink]="item.route"
-                routerLinkActive="nav-link--active"
-                class="nav-link"
-              >
+              <a [routerLink]="item.route" routerLinkActive="nav-link--active" class="nav-link">
                 <wizz-icon [name]="item.icon" [size]="17" />
                 <span>{{ item.label }}</span>
               </a>
@@ -649,17 +643,21 @@ export class TopNavbarComponent {
             <div class="balance-pills">
               <div class="bal-pill bal-pill--transit">
                 <wizz-icon name="arrow-left-right" [size]="13" />
-                <span>IN TRANSIT <strong>{{ formatUsd(store.inTransitUsd()) }}</strong></span>
+                <span
+                  >IN TRANSIT <strong>{{ formatUsd(store.inTransitUsd()) }}</strong></span
+                >
               </div>
               <div class="bal-pill bal-pill--avail">
                 <wizz-icon name="check" [size]="13" />
-                <span>AVAILABLE <strong>{{ formatUsd(store.availableWalletUsd()) }}</strong></span>
+                <span
+                  >AVAILABLE <strong>{{ formatUsd(store.availableWalletUsd()) }}</strong></span
+                >
               </div>
             </div>
 
             <div class="sidebar-legal">
-              <a routerLink="/terms">Terms &amp; Conditions</a>
-              <a routerLink="/terms" [queryParams]="{ tab: 'privacy' }">Privacy Policies</a>
+              <a routerLink="/legal" [queryParams]="{ view: 'terms' }">Terms &amp; Conditions</a>
+              <a routerLink="/legal" [queryParams]="{ view: 'privacy' }">Privacy Policies</a>
               <span class="ver">{{ theme.brand().version }}</span>
             </div>
           </div>
@@ -674,11 +672,7 @@ export class TopNavbarComponent {
       <!-- Mobile Bottom Navigation (< 768px) -->
       <nav class="mobile-bottom-nav" aria-label="Primary Mobile Navigation">
         @for (item of navItems(); track item.route) {
-          <a
-            [routerLink]="item.route"
-            routerLinkActive="mob-tab--active"
-            class="mob-tab"
-          >
+          <a [routerLink]="item.route" routerLinkActive="mob-tab--active" class="mob-tab">
             <wizz-icon [name]="item.icon" [size]="19" />
             <span>{{ item.mobileLabel }}</span>
           </a>
@@ -913,9 +907,9 @@ export class AppShellComponent {
       </main>
 
       <footer class="focused-footer">
-        <a routerLink="/terms">Terms &amp; Conditions</a>
+        <a routerLink="/legal" [queryParams]="{ view: 'terms' }">Terms &amp; Conditions</a>
         <span>·</span>
-        <a routerLink="/terms" [queryParams]="{ tab: 'privacy' }">Privacy Policies</a>
+        <a routerLink="/legal" [queryParams]="{ view: 'privacy' }">Privacy Policies</a>
         <span>·</span>
         <span>{{ theme.brand().version }}</span>
       </footer>
