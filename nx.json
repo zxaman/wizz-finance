@@ -3,11 +3,7 @@
   "defaultProject": "wizz-finance",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/**/*.spec.ts",
-      "!{projectRoot}/tsconfig.spec.json"
-    ],
+    "production": ["default", "!{projectRoot}/**/*.spec.ts", "!{projectRoot}/tsconfig.spec.json"],
     "sharedGlobals": ["{workspaceRoot}/tsconfig.base.json"]
   },
   "targetDefaults": {
@@ -40,5 +36,6 @@
       "style": "scss",
       "changeDetection": "OnPush"
     }
-  }
+  },
+  "analytics": true
 }
