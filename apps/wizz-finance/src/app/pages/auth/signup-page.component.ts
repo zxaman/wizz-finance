@@ -165,196 +165,101 @@ type SignupModalKind =
       </wizz-auth-split-shell>
     }
 
-    <!-- 02 Error: Age Requirement Modal -->
+    <!-- One shared modal instance handles Screen 02 errors, Screen 03 uniqueness, Screen 04 OTP, and FAQ. -->
     <wizz-modal
-      [open]="activeModal() === 'age-error'"
-      tone="warning"
-      title="You Don't Meet Our Age Requirements"
-      subtitle="You must be 18 years or older to use this service."
-      (closed)="activeModal.set(null)"
+      [open]="activeModal() !== null"
+      [tone]="activeModalTone()"
+      [title]="activeModalTitle()"
+      [subtitle]="activeModalSubtitle()"
+      [align]="activeModal() === 'verify-otp' ? 'left' : 'center'"
+      [maxWidth]="activeModal() === 'verify-otp' ? 460 : 440"
+      [showSupportFooter]="modalShowsSupport()"
+      (closed)="handleModalClose()"
     >
-      <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Got It</wizz-button>
-    </wizz-modal>
-
-    <!-- 02 Error: Something Went Wrong Modal -->
-    <wizz-modal
-      [open]="activeModal() === 'system-error'"
-      tone="warning"
-      title="Something Went Wrong"
-      subtitle="Unable to submit right now, please retry."
-      [showSupportFooter]="true"
-      (closed)="activeModal.set(null)"
-    >
-      <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Try Again</wizz-button>
-    </wizz-modal>
-
-    <!-- 03 Uniqueness 1: Account already exists -->
-    <wizz-modal
-      [open]="activeModal() === 'unique-exists'"
-      tone="warning"
-      title="An account already exists with this email/mobile"
-      [showSupportFooter]="true"
-      (closed)="activeModal.set(null)"
-    >
-      <div class="masked-grid">
-        <div>
-          <small>Email Address</small>
-          <strong>{{ maskedEmail() }}</strong>
-        </div>
-        <div>
-          <small>Mobile number</small>
-          <strong>{{ maskedPhone() }}</strong>
-        </div>
-      </div>
-      <wizz-button [fullWidth]="true" (clicked)="goToLogin()">Login Instead</wizz-button>
-      <wizz-button variant="outline" [fullWidth]="true" (clicked)="activeModal.set(null)">
-        Use Another Contact
-      </wizz-button>
-    </wizz-modal>
-
-    <!-- 03 Uniqueness 2: Similar account found -->
-    <wizz-modal
-      [open]="activeModal() === 'unique-similar'"
-      tone="warning"
-      title="We found a similar account, Do you already have an account?"
-      (closed)="activeModal.set(null)"
-    >
-      <div class="masked-grid">
-        <div>
-          <small>Email Address</small>
-          <strong>{{ maskedEmail() }}</strong>
-        </div>
-        <div>
-          <small>Mobile number</small>
-          <strong>{{ maskedPhone() }}</strong>
-        </div>
-        <div>
-          <small>Name</small>
-          <strong>Aks*********vi</strong>
-        </div>
-        <div>
-          <small>Date of Birth</small>
-          <strong>15 May 2002</strong>
-        </div>
-        <div>
-          <small>Nationality</small>
-          <strong>Uni********ca</strong>
-        </div>
-      </div>
-      <wizz-button [fullWidth]="true" (clicked)="goToLogin()">Yes, Log In</wizz-button>
-      <wizz-button variant="outline" [fullWidth]="true" (clicked)="proceedToOtp()">
-        No, Continue Sign up
-      </wizz-button>
-    </wizz-modal>
-
-    <!-- 03 Uniqueness 3: Partner Linked Account -->
-    <wizz-modal
-      [open]="activeModal() === 'unique-partner'"
-      tone="warning"
-      title="You Already Have an Account With Partner MO*****T Linked With the Following Details"
-      [showSupportFooter]="true"
-      (closed)="activeModal.set(null)"
-    >
-      <div class="masked-grid">
-        <div>
-          <small>Email Address</small>
-          <strong>{{ maskedEmail() }}</strong>
-        </div>
-        <div>
-          <small>Mobile number</small>
-          <strong>{{ maskedPhone() }}</strong>
-        </div>
-      </div>
-      <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Go Back</wizz-button>
-    </wizz-modal>
-
-    <!-- 04 Verify Email & Phone OTP Modal -->
-    <wizz-modal
-      [open]="activeModal() === 'verify-otp'"
-      align="left"
-      title="Please verify your email and phone"
-      [maxWidth]="460"
-      (closed)="activeModal.set('otp-incomplete')"
-    >
-      <wizz-otp-field
-        label="Email Verification Code"
-        placeholder="Enter 6 digit Email Verification Code"
-        [sentMessage]="
-          'A code has been sent to <strong>' + (email() || 'ajay@gmail.com') + '</strong>'
-        "
-        [(value)]="emailOtp"
-        [error]="emailOtpError()"
-        (resend)="resendEmailCode()"
-      />
-
-      <wizz-otp-field
-        label="Mobile Verification Code"
-        placeholder="Enter 6 digit Mobile Verification Code"
-        [sentMessage]="
-          'A code has been sent to <strong>' +
-          dialCode() +
-          ' ' +
-          (phone() || '(314) 232 1112') +
-          '</strong>'
-        "
-        [(value)]="mobileOtp"
-        [error]="mobileOtpError()"
-        (resend)="resendSmsCode()"
-      />
-
-      <p class="otp-note">
-        If you've entered the wrong phone number or email, you can go back and update them.
-        <span class="demo-hint"
-          >(Tip: enter any 6 digits e.g. 123456, or 000000 to test error)</span
-        >
-      </p>
-
-      <wizz-button [fullWidth]="true" (clicked)="verifyOtpCodes()">
-        Verify Email and Phone
-      </wizz-button>
-    </wizz-modal>
-
-    <!-- 04 Error: Too Many Attempts -->
-    <wizz-modal
-      [open]="activeModal() === 'otp-too-many'"
-      tone="warning"
-      title="Too Many Attempts, Please Try Again"
-      subtitle="You have exceeded the maximum verification attempts. Please try again later."
-      (closed)="activeModal.set(null)"
-    >
-      <wizz-button [fullWidth]="true" (clicked)="activeModal.set('verify-otp')"
-        >Try Again</wizz-button
-      >
-      <wizz-button variant="ghost" [fullWidth]="true" (clicked)="finishPartialVerification()">
-        Continue Anyway
-      </wizz-button>
-    </wizz-modal>
-
-    <!-- 04 Warning: Verification Not Completed -->
-    <wizz-modal
-      [open]="activeModal() === 'otp-incomplete'"
-      tone="warning"
-      title="Verification Not Completed"
-      subtitle="Please complete your verification process to get full access to features across PayGate."
-      (closed)="activeModal.set(null)"
-    >
-      <wizz-button [fullWidth]="true" (clicked)="activeModal.set('verify-otp')">
-        Complete Verification
-      </wizz-button>
-      <wizz-button variant="ghost" [fullWidth]="true" (clicked)="finishPartialVerification()">
-        Continue Anyway
-      </wizz-button>
-    </wizz-modal>
-
-    <!-- FAQ Modal -->
-    <wizz-modal
-      [open]="activeModal() === 'faq'"
-      tone="info"
-      title="Individual vs Organization Account"
-      subtitle="Choose Individual if you are a freelancer, remote worker, or sending personal remittances. Choose Organization if you are registering an incorporated legal entity."
-      (closed)="activeModal.set(null)"
-    >
-      <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Got It</wizz-button>
+      @switch (activeModal()) {
+        @case ('age-error') {
+          <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Got It</wizz-button>
+        }
+        @case ('system-error') {
+          <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Try Again</wizz-button>
+        }
+        @case ('unique-exists') {
+          <div class="masked-grid">
+            <div><small>Email Address</small><strong>{{ maskedEmail() }}</strong></div>
+            <div><small>Mobile number</small><strong>{{ maskedPhone() }}</strong></div>
+          </div>
+          <wizz-button [fullWidth]="true" (clicked)="goToLogin()">Login Instead</wizz-button>
+          <wizz-button variant="outline" [fullWidth]="true" (clicked)="activeModal.set(null)">
+            Use Another Contact
+          </wizz-button>
+        }
+        @case ('unique-similar') {
+          <div class="masked-grid">
+            <div><small>Email Address</small><strong>{{ maskedEmail() }}</strong></div>
+            <div><small>Mobile number</small><strong>{{ maskedPhone() }}</strong></div>
+            <div><small>Name</small><strong>Aks*********vi</strong></div>
+            <div><small>Date of Birth</small><strong>15 May 2002</strong></div>
+            <div><small>Nationality</small><strong>Uni********ca</strong></div>
+          </div>
+          <wizz-button [fullWidth]="true" (clicked)="goToLogin()">Yes, Log In</wizz-button>
+          <wizz-button variant="outline" [fullWidth]="true" (clicked)="proceedToOtp()">
+            No, Continue Sign up
+          </wizz-button>
+        }
+        @case ('unique-partner') {
+          <div class="masked-grid">
+            <div><small>Email Address</small><strong>{{ maskedEmail() }}</strong></div>
+            <div><small>Mobile number</small><strong>{{ maskedPhone() }}</strong></div>
+          </div>
+          <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Go Back</wizz-button>
+        }
+        @case ('verify-otp') {
+          <wizz-otp-field
+            label="Email Verification Code"
+            placeholder="Enter 6 digit Email Verification Code"
+            [sentMessage]="'A code has been sent to <strong>' + (email() || 'ajay@gmail.com') + '</strong>'"
+            [(value)]="emailOtp"
+            [error]="emailOtpError()"
+            (resend)="resendEmailCode()"
+          />
+          <wizz-otp-field
+            label="Mobile Verification Code"
+            placeholder="Enter 6 digit Mobile Verification Code"
+            [sentMessage]="'A code has been sent to <strong>' + dialCode() + ' ' + (phone() || '(314) 232 1112') + '</strong>'"
+            [(value)]="mobileOtp"
+            [error]="mobileOtpError()"
+            (resend)="resendSmsCode()"
+          />
+          <p class="otp-note">
+            If you've entered the wrong phone number or email, you can go back and update them.
+            <span class="demo-hint">(Tip: enter any 6 digits e.g. 123456, or 000000 to test error)</span>
+          </p>
+          <wizz-button [fullWidth]="true" (clicked)="verifyOtpCodes()">
+            Verify Email and Phone
+          </wizz-button>
+        }
+        @case ('otp-too-many') {
+          <wizz-button [fullWidth]="true" (clicked)="activeModal.set('verify-otp')">Try Again</wizz-button>
+          <wizz-button variant="ghost" [fullWidth]="true" (clicked)="finishPartialVerification()">
+            Continue Anyway
+          </wizz-button>
+        }
+        @case ('otp-incomplete') {
+          <wizz-button [fullWidth]="true" (clicked)="activeModal.set('verify-otp')">
+            Complete Verification
+          </wizz-button>
+          <wizz-button variant="ghost" [fullWidth]="true" (clicked)="finishPartialVerification()">
+            Continue Anyway
+          </wizz-button>
+        }
+        @case ('faq') {
+          <p class="modal-copy">
+            Choose Individual if you are a freelancer, remote worker, or sending personal remittances.
+            Choose Organization if you are registering an incorporated legal entity.
+          </p>
+          <wizz-button [fullWidth]="true" (clicked)="activeModal.set(null)">Got It</wizz-button>
+        }
+      }
     </wizz-modal>
   `,
   styles: [
@@ -384,6 +289,12 @@ type SignupModalKind =
         font-size: 0.76rem;
         line-height: 1.45;
         color: var(--wizz-text-secondary);
+      }
+      .modal-copy {
+        margin: 0 0 16px;
+        color: var(--wizz-text-secondary);
+        font-size: 0.84rem;
+        line-height: 1.55;
       }
       .demo-hint {
         display: block;
@@ -525,6 +436,48 @@ export class SignupPageComponent {
 
   readonly step = signal<SignupStep>('profile-type');
   readonly activeModal = signal<SignupModalKind>(null);
+  readonly activeModalTitle = computed(() => {
+    switch (this.activeModal()) {
+      case 'age-error': return "You Don't Meet Our Age Requirements";
+      case 'system-error': return 'Something Went Wrong';
+      case 'unique-exists': return 'An account already exists with this email/mobile';
+      case 'unique-similar': return 'We found a similar account, Do you already have an account?';
+      case 'unique-partner': return 'You Already Have an Account With Partner MO*****T Linked With the Following Details';
+      case 'verify-otp': return 'Please verify your email and phone';
+      case 'otp-too-many': return 'Too Many Attempts, Please Try Again';
+      case 'otp-incomplete': return 'Verification Not Completed';
+      case 'faq': return 'Individual vs Organization Account';
+      default: return '';
+    }
+  });
+  readonly activeModalSubtitle = computed(() => {
+    switch (this.activeModal()) {
+      case 'age-error': return 'You must be 18 years or older to use this service.';
+      case 'system-error': return 'Unable to submit right now, please retry.';
+      case 'otp-too-many': return 'You have exceeded the maximum verification attempts. Please try again later.';
+      case 'otp-incomplete': return 'Please complete your verification process to get full access to features across PayGate.';
+      default: return '';
+    }
+  });
+  readonly activeModalTone = computed<'warning' | 'info' | 'none'>(() => {
+    switch (this.activeModal()) {
+      case 'age-error':
+      case 'system-error':
+      case 'unique-exists':
+      case 'unique-similar':
+      case 'unique-partner':
+      case 'otp-too-many':
+      case 'otp-incomplete':
+        return 'warning';
+      case 'faq':
+        return 'info';
+      default:
+        return 'none';
+    }
+  });
+  readonly modalShowsSupport = computed(() =>
+    ['system-error', 'unique-exists', 'unique-partner'].includes(this.activeModal() ?? ''),
+  );
   readonly submitted = signal(false);
 
   // Parent-owned signal models persist while the individual form is mounted/unmounted.
@@ -582,6 +535,14 @@ export class SignupPageComponent {
         this.activeModal.set('verify-otp');
       }
     });
+  }
+
+  handleModalClose(): void {
+    if (this.activeModal() === 'verify-otp') {
+      this.activeModal.set('otp-incomplete');
+      return;
+    }
+    this.activeModal.set(null);
   }
 
   handleBack(): void {
