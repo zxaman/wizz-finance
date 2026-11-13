@@ -12,7 +12,6 @@
       "options": {
         "outputPath": "dist/apps/wizz-finance",
         "browser": "apps/wizz-finance/src/main.ts",
-        "polyfills": ["zone.js"],
         "tsConfig": "apps/wizz-finance/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [

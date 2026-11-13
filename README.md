@@ -61,25 +61,22 @@ The active Paygate entry route currently presents the responsive landing page; a
 
 - Angular `^21.2.0` and Nx `^24.0.6`
 - Standalone components, Angular Signals, and lazy-ready app structure
-- Zone.js is loaded as a build polyfill because the app uses `provideZoneChangeDetection()`
+- Angular zoneless change detection via `provideZonelessChangeDetection()`; no Zone.js polyfill is required
 - `@lucide/angular` icons
 - SCSS design tokens with white-label brand configuration
 
 ## Troubleshooting: Zone.js / blank screen
 
-The Wizz Finance build declares `zone.js` as a dependency and loads it as a polyfill for `provideZoneChangeDetection()`. If the dev server reports `Failed to resolve import "zone.js"` or the browser shows Angular `NG0908`, the local install/cache is stale. From the repository root, run:
-
-```bash
-npm ci --legacy-peer-deps
-```
-
-Then stop and restart the dev server with `npm start`. If Vite still references an old generated entry, stop the server, remove the `.angular/vite-root` cache, and start again. In PowerShell:
+Wizz Finance uses Angular's zoneless change detection and intentionally does not load `zone.js`. If Vite still reports `Failed to resolve import "zone.js"` from `.angular/vite-root/.../polyfills.js`, that generated Vite entry is stale from an earlier configuration. Stop the dev server, then clear the generated cache and reinstall the current lockfile from the repository root:
 
 ```powershell
-Remove-Item -Recurse -Force .angular/vite-root
+Remove-Item -Recurse -Force .angular\vite-root -ErrorAction SilentlyContinue
+npm ci --legacy-peer-deps
 npm start
 ```
 
+This also removes the cause of `NG0908`: the app no longer requests Zone-based change detection.
+
 ## Vercel deployment note
 
-Vercel should use the repository root with the build command `npm run build`. The supplied log checks out commit `56162a1`, which predates the fixes for both the missing animation runtime and Zone.js setup. Deploy the latest `main` revision so Vercel uses the current `package.json`, lockfile, and app polyfill configuration.
+Vercel should use the repository root with the build command `npm run build`. The supplied log checks out commit `56162a1`, which predates the animation-provider fix. Deploy the latest `main` revision so Vercel uses the current source and lockfile.
