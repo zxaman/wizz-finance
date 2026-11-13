@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppShellComponent } from '@wizz/remittance-shell';
 import {
@@ -12,6 +12,8 @@ import {
   UiModalComponent,
   UiSelectComponent,
   UiTabsComponent,
+  ToastService,
+  UiToastContainerComponent,
   WizzIconComponent,
 } from '@wizz/ui';
 
@@ -31,6 +33,7 @@ import {
     UiTabsComponent,
     UiEmptyStateComponent,
     UiAccordionComponent,
+    UiToastContainerComponent,
     WizzIconComponent,
   ],
   template: `
@@ -68,6 +71,14 @@ import {
         }
       </div>
     </wizz-app-shell>
+    <wizz-modal [open]="showAddDialog()" title="Add Payment Method" subtitle="Add a bank account or card for partner payouts." tone="info" (closed)="showAddDialog.set(false)">
+      <wizz-input label="Account or card name" placeholder="Enter a name" [(value)]="newMethodName" />
+      <div drawer-footer>
+        <wizz-button variant="outline" [fullWidth]="true" (clicked)="showAddDialog.set(false)">Cancel</wizz-button>
+        <wizz-button [fullWidth]="true" (clicked)="saveMethod()">Save Method</wizz-button>
+      </div>
+    </wizz-modal>
+    <wizz-toast-container />
   `,
   styles: [
     `
@@ -88,4 +99,28 @@ import {
     `,
   ],
 })
-export class PaymentMethodsPageComponent {}
+export class PaymentMethodsPageComponent {
+  private readonly toast = inject(ToastService);
+  readonly pmTabs = [
+    { id: 'banks', label: 'Bank Accounts' },
+    { id: 'cards', label: 'Cards' },
+  ] as const;
+  readonly activeTab = signal('banks');
+  readonly showAddDialog = signal(false);
+  readonly newMethodName = signal('');
+
+  openAddDrawer(): void {
+    this.newMethodName.set('');
+    this.showAddDialog.set(true);
+  }
+
+  saveMethod(): void {
+    const name = this.newMethodName().trim();
+    if (!name) {
+      this.toast.show('Enter an account or card name to continue.', 'warning');
+      return;
+    }
+    this.showAddDialog.set(false);
+    this.toast.show(`${name} was saved as a payment method.`, 'success');
+  }
+}

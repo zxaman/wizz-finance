@@ -1,92 +1,106 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter, Routes } from '@angular/router';
-import {
-  AppShellComponent,
-  AuthSplitShellComponent,
-} from '@wizz/remittance-shell';
+import { PreloadAllModules, provideRouter, Routes, withPreloading } from '@angular/router';
+import { LandingPageComponent } from './landing/landing-page.component';
 import {
   BrandConfig,
   DEFAULT_PAYGATE_BRAND,
-  PARTNER_BRAND,
   provideBrandConfig,
   ThemeService,
 } from '@wizz/design-tokens';
 import { provideWizzIcons } from '@wizz/ui';
 import { WizzPlatformStore } from '@wizz/remittance-data-access';
 
+const PARTNER_BRAND: BrandConfig = {
+  ...DEFAULT_PAYGATE_BRAND,
+  appId: 'wizz-partner-portal',
+  name: 'Wizz Partner',
+  badgeLabel: 'Partner',
+  tagline: 'Global Payments for Partners',
+  walletLabel: 'Partner Balance',
+};
+
 const partnerRoutes: Routes = [
+  { path: '', component: LandingPageComponent },
   {
-    path: '',
-    component: AuthSplitShellComponent,
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./app/landing/landing-page.component').then(
-            (m) => m.LandingPageComponent
-          ),
-      },
-      {
-        path: 'auth',
-        children: [
-          {
-            path: 'signup',
-            loadComponent: () =>
-              import('./app/pages/auth/signup-page.component').then(
-                (m) => m.SignupPageComponent
-              ),
-          },
-          {
-            path: 'login',
-            loadComponent: () =>
-              import('./app/pages/auth/login-page.component').then(
-                (m) => m.LoginPageComponent
-              ),
-          },
-          {
-            path: 'forgot-password',
-            loadComponent: () =>
-              import('./app/pages/auth/forgot-reset-password.component').then(
-                (m) => m.ForgotResetPasswordPageComponent
-              ),
-          },
-        ],
-      },
-    ],
+    path: 'auth/signup',
+    loadComponent: () =>
+      import('./pages/auth/signup-page.component').then((m) => m.SignupPageComponent),
+  },
+  {
+    path: 'auth/login',
+    loadComponent: () =>
+      import('./pages/auth/login-page.component').then((m) => m.LoginPageComponent),
+  },
+  {
+    path: 'auth/forgot-password',
+    loadComponent: () =>
+      import('./pages/auth/forgot-reset-password.component').then(
+        (m) => m.ForgotResetPasswordPageComponent,
+      ),
+  },
+  {
+    path: 'legal',
+    loadComponent: () =>
+      import('./app/legal-information-page.component').then(
+        (m) => m.PartnerLegalInformationPageComponent,
+      ),
   },
   {
     path: 'dashboard',
-    component: AppShellComponent,
-    loadChildren: () =>
-      import('./app/pages/dashboard/dashboard-and-accounts.routes').then(
-        (m) => m.dashboardRoutes
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard-and-accounts.component').then(
+        (m) => m.DashboardAndAccountsComponent,
       ),
+  },
+  {
+    path: 'payments',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard-and-accounts.component').then(
+        (m) => m.DashboardAndAccountsComponent,
+      ),
+  },
+  {
+    path: 'payment-methods',
+    loadComponent: () =>
+      import('./pages/payment-methods/payment-methods-page.component').then(
+        (m) => m.PaymentMethodsPageComponent,
+      ),
+  },
+  {
+    path: 'beneficiaries',
+    loadComponent: () =>
+      import('./pages/beneficiaries/beneficiaries-page.component').then(
+        (m) => m.BeneficiariesPageComponent,
+      ),
+  },
+  {
+    path: 'send-money',
+    loadComponent: () =>
+      import('./pages/send-money/send-money-page.component').then((m) => m.SendMoneyPageComponent),
   },
   {
     path: 'profile',
-    component: AppShellComponent,
     loadComponent: () =>
-      import('./app/pages/profile-terms/profile-and-terms.component').then(
-        (m) => m.ProfileAndTermsPageComponent
+      import('./pages/profile-terms/profile-and-terms.component').then(
+        (m) => m.ProfileAndTermsComponent,
       ),
   },
-  {
-    path: '**',
-    redirectTo: '',
-  },
+  { path: '**', redirectTo: '' },
 ];
 
 @Component({
   selector: 'wizz-partner-root',
   standalone: true,
+  imports: [RouterOutlet],
   template: `<router-outlet />`,
 })
 export class PartnerAppComponent {}
 
 bootstrapApplication(PartnerAppComponent, {
   providers: [
-    provideRouter(partnerRoutes),
+    provideRouter(partnerRoutes, withPreloading(PreloadAllModules)),
     provideBrandConfig(PARTNER_BRAND),
     provideWizzIcons(),
     ThemeService,

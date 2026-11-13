@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppShellComponent } from '@wizz/remittance-shell';
 import {
@@ -11,6 +11,8 @@ import {
   UiInputComponent,
   UiModalComponent,
   UiSelectComponent,
+  ToastService,
+  UiToastContainerComponent,
   WizzIconComponent,
 } from '@wizz/ui';
 
@@ -29,13 +31,14 @@ import {
     UiModalComponent,
     UiAccordionComponent,
     UiEmptyStateComponent,
+    UiToastContainerComponent,
     WizzIconComponent,
   ],
   template: `
     <wizz-app-shell>
       <div class="partner-profile">
         <h1>Partner Profile</h1>
-        <wizz-brand-logo [brand]="'partner'" />
+        <wizz-brand-logo [customLabel]="'Partner'" />
 
         <wizz-accordion title="Partner Details">
           <div class="detail-grid">
@@ -55,6 +58,7 @@ import {
         </wizz-accordion>
       </div>
     </wizz-app-shell>
+    <wizz-toast-container />
   `,
   styles: [
     `
@@ -88,4 +92,6 @@ import {
     `,
   ],
 })
-export class ProfileAndTermsComponent {}
+export class ProfileAndTermsComponent {
+  protected readonly toast = inject(ToastService);
+}

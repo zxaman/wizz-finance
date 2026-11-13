@@ -399,7 +399,7 @@ export class PaymentsHistoryPageComponent {
       .page-head { margin-bottom: 24px; }
       .page-head h1 { margin: 0; font-size: 1.45rem; font-weight: 800; }
       .sub { margin: 4px 0 0; font-size: 0.84rem; color: var(--wizz-text-secondary); }
-      .va-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+      .va-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 18px; }
       .va-card { border: 1px solid var(--wizz-border); border-radius: 18px; padding: 20px; background: #ffffff; display: flex; flex-direction: column; gap: 16px; }
       .va-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
       .va-curr { display: flex; gap: 10px; }
@@ -409,8 +409,14 @@ export class PaymentsHistoryPageComponent {
       .va-details { display: flex; flex-direction: column; gap: 10px; padding-top: 12px; border-top: 1px solid var(--wizz-border); }
       .va-row { display: flex; justify-content: space-between; font-size: 0.82rem; }
       .va-row small { color: var(--wizz-text-muted); }
-      .copy-inline { display: inline-flex; align-items: center; gap: 6px; }
-      .copy-btn { background: var(--wizz-surface-muted); border: 1px solid var(--wizz-border); border-radius: 6px; padding: 4px; cursor: pointer; display: inline-flex; }
+      .copy-inline { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+      .copy-inline strong { overflow-wrap: anywhere; }
+      .copy-btn { flex: 0 0 auto; background: var(--wizz-surface-muted); border: 1px solid var(--wizz-border); border-radius: 6px; padding: 4px; cursor: pointer; display: inline-flex; }
+      @media (max-width: 480px) {
+        .va-row { align-items: flex-start; gap: 8px; }
+        .va-row > span { flex: 0 0 38%; }
+        .va-row > .copy-inline { flex: 1; justify-content: flex-end; }
+      }
     `,
   ],
 })

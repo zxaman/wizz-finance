@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WizzPlatformStore } from '@wizz/remittance-data-access';
 import { AppShellComponent } from '@wizz/remittance-shell';
@@ -8,7 +9,7 @@ import { COUNTRIES } from '@wizz/utils';
 @Component({
   selector: 'app-profile-and-terms-page',
   standalone: true,
-  imports: [AppShellComponent, UiButtonComponent, UiInputComponent, UiModalComponent, UiAccordionComponent, UiSelectComponent, WizzIconComponent],
+  imports: [FormsModule, AppShellComponent, UiButtonComponent, UiInputComponent, UiModalComponent, UiAccordionComponent, UiSelectComponent, UiBadgeComponent, WizzIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <wizz-app-shell>
@@ -23,7 +24,7 @@ import { COUNTRIES } from '@wizz/utils';
         </wizz-accordion>
         <wizz-accordion title="Contact Details">
           <wizz-input label="Phone Number" [(value)]="store.user().phone" />
-          <wizz-input label="Address" [(value)]="store.user().address" />
+          <wizz-input label="Address" [(value)]="addressLine" />
         </wizz-accordion>
         <wizz-accordion title="Identification Documents">
           <div class="doc-row"><span>Passport</span><wizz-badge tone="verified">Verified</wizz-badge></div>
@@ -62,16 +63,17 @@ import { COUNTRIES } from '@wizz/utils';
 export class ProfileAndTermsPageComponent {
   protected readonly store = inject(WizzPlatformStore);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastService);
+  protected readonly toast = inject(ToastService);
+  readonly addressLine = signal(this.store.user().address.line1);
   protected readonly countryOptions: readonly SelectOption[] = COUNTRIES.map(c => ({ value: c.code, label: c.name }));
   readonly showDeleteConfirm = signal(false);
   logout(): void {
-    this.store.user.set(null);
+    this.store.logout();
     this.router.navigate(['/auth/login']);
   }
   confirmDelete(): void { this.showDeleteConfirm.set(true); }
   executeDelete(): void {
-    this.store.user.set(null);
+    this.store.logout();
     this.showDeleteConfirm.set(false);
     this.router.navigate(['/auth/signup']);
   }
@@ -89,7 +91,7 @@ export class MyProfilePageComponent {}
 @Component({
   selector: 'app-terms-page',
   standalone: true,
-  imports: [AppShellComponent, UiButtonComponent, WizzIconComponent],
+  imports: [FormsModule, AppShellComponent, UiButtonComponent, WizzIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <wizz-app-shell>
@@ -128,5 +130,3 @@ export class TermsPageComponent {
     this.router.navigate(['/dashboard']);
   }
 }
-
-export { ProfileAndTermsPageComponent, MyProfilePageComponent, TermsPageComponent };

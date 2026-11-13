@@ -41,7 +41,7 @@ import { ToastService, UiButtonComponent, UiInputComponent, UiModalComponent, Ui
       .hub-stack { display: flex; flex-direction: column; gap: 20px; }
       .hub-stack h1 { margin: 0; font-size: 1.45rem; font-weight: 800; }
       .sub { margin: 4px 0 0; font-size: 0.84rem; color: var(--wizz-text-secondary); }
-      .hub-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+      .hub-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; }
       .hub-card { border: 1px solid var(--wizz-border); border-radius: 16px; padding: 18px; background: #ffffff; cursor: pointer; display: flex; flex-direction: column; gap: 8px; }
       .hub-card:hover { border-color: var(--wizz-primary); box-shadow: var(--wizz-shadow-sm); }
       .hub-visual { width: 48px; height: 48px; border-radius: 12px; background: var(--wizz-surface-muted); display: inline-flex; align-items: center; justify-content: center; color: var(--wizz-text); }
@@ -107,5 +107,3 @@ export class OnboardingProfilePageComponent {
     this.router.navigate(['/dashboard']);
   }
 }
-
-export { OnboardingHubPageComponent, OnboardingProfilePageComponent };

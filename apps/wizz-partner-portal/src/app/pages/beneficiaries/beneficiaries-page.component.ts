@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AppShellComponent } from '@wizz/remittance-shell';
 import {
@@ -11,6 +11,8 @@ import {
   UiInputComponent,
   UiModalComponent,
   UiSelectComponent,
+  ToastService,
+  UiToastContainerComponent,
   WizzIconComponent,
 } from '@wizz/ui';
 
@@ -29,6 +31,7 @@ import {
     UiModalComponent,
     UiAccordionComponent,
     UiEmptyStateComponent,
+    UiToastContainerComponent,
     WizzIconComponent,
   ],
   template: `
@@ -59,6 +62,14 @@ import {
         </div>
       </div>
     </wizz-app-shell>
+    <wizz-modal [open]="showAddDialog()" title="Add Partner Beneficiary" subtitle="Enter the beneficiary details to continue." tone="info" (closed)="showAddDialog.set(false)">
+      <wizz-input label="Beneficiary Name" placeholder="Enter full name" [(value)]="newBeneficiaryName" />
+      <div drawer-footer>
+        <wizz-button variant="outline" [fullWidth]="true" (clicked)="showAddDialog.set(false)">Cancel</wizz-button>
+        <wizz-button [fullWidth]="true" (clicked)="saveBeneficiary()">Save Beneficiary</wizz-button>
+      </div>
+    </wizz-modal>
+    <wizz-toast-container />
   `,
   styles: [
     `
@@ -115,4 +126,23 @@ import {
     `,
   ],
 })
-export class BeneficiariesPageComponent {}
+export class BeneficiariesPageComponent {
+  private readonly toast = inject(ToastService);
+  readonly showAddDialog = signal(false);
+  readonly newBeneficiaryName = signal('');
+
+  openAddDrawer(): void {
+    this.newBeneficiaryName.set('');
+    this.showAddDialog.set(true);
+  }
+
+  saveBeneficiary(): void {
+    const name = this.newBeneficiaryName().trim();
+    if (!name) {
+      this.toast.show('Enter a beneficiary name to continue.', 'warning');
+      return;
+    }
+    this.showAddDialog.set(false);
+    this.toast.show(`${name} was added to your beneficiaries.`, 'success');
+  }
+}

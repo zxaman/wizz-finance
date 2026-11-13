@@ -6,12 +6,12 @@
   "prefix": "wizz-partner",
   "targets": {
     "build": {
-      "executor": "@nx/angular:application",
+      "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/wizz-partner-portal",
         "index": "apps/wizz-partner-portal/src/index.html",
-        "main": "apps/wizz-partner-portal/src/main.ts",
+        "browser": "apps/wizz-partner-portal/src/main.ts",
         "tsConfig": "apps/wizz-partner-portal/tsconfig.app.json",
         "assets": [
           "apps/wizz-partner-portal/src/favicon.ico",
@@ -26,18 +26,15 @@
           "outputHashing": "all"
         },
         "development": {
-          "buildOptimizer": false,
           "optimization": false,
-          "vendorChunk": true,
           "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true
+          "sourceMap": true
         }
       },
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@nx/angular:dev-server",
+      "executor": "@angular/build:dev-server",
       "options": {
         "buildTarget": "wizz-partner-portal:build",
         "port": 4201,

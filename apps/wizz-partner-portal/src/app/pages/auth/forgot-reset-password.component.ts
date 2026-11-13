@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AuthSplitShellComponent,
@@ -30,7 +30,7 @@ import {
   template: `
     <wizz-auth-split-shell>
       <div class="auth-split-left">
-        <wizz-brand-logo [brand]="'partner'" />
+        <wizz-brand-logo [customLabel]="'Partner'" />
         <div class="promo-content">
           <h2>Local Accounts in Global Currencies</h2>
           <p>Partner-branded white-label remittance portal for your clients.</p>
@@ -49,13 +49,14 @@ import {
               </wizz-button>
             </div>
 
-            <div class="check-email-box" *ngIf="emailSent()">
+            @if (emailSent()) {
+              <div class="check-email-box">
               <wizz-icon name="mail" [size]="48" class="mail-icon" />
               <h3>Check Your Email</h3>
               <p class="sub">We've sent a reset link to {{ email() }}</p>
               <div class="shortcuts">
                 <button type="button" class="shortcut-btn" (click)="openMail('gmail')">
-                  <wizz-icon name="google" [size]="16" /> Open Gmail
+                  <wizz-icon name="globe" [size]="16" /> Open Gmail
                 </button>
                 <button type="button" class="shortcut-btn" (click)="openMail('outlook')">
                   <wizz-icon name="mail" [size]="16" /> Open Outlook
@@ -67,7 +68,8 @@ import {
                   Resend Link
                 </button>
               </div>
-            </div>
+              </div>
+            }
           }
 
           <!-- Screen 10: Create New Password -->

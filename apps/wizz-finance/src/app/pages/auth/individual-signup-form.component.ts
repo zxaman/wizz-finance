@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
-import { SelectOption, UiButtonComponent, UiInputComponent, UiPhoneInputComponent, UiSelectComponent } from '@wizz/ui';
+import {
+  SelectOption,
+  UiButtonComponent,
+  UiInputComponent,
+  UiPhoneInputComponent,
+  UiSelectComponent,
+} from '@wizz/ui';
 import { COUNTRIES } from '@wizz/utils';
 
 /** Form value models are owned by the flow parent so switching steps preserves user input. */
@@ -43,7 +49,9 @@ import { COUNTRIES } from '@wizz/utils';
         label="Mobile number"
         [(dialCode)]="dialCode"
         [(phone)]="phone"
-        [error]="submitted() && phone().trim().length < 7 ? 'Please enter a valid mobile number' : ''"
+        [error]="
+          submitted() && phone().trim().length < 7 ? 'Please enter a valid mobile number' : ''
+        "
       />
 
       <wizz-select
@@ -86,9 +94,13 @@ import { COUNTRIES } from '@wizz/utils';
         />
         <span>
           I agree with
-          <button type="button" class="text-link" (click)="termsRequested.emit()">Privacy Policy</button>
+          <button type="button" class="text-link" (click)="termsRequested.emit()">
+            Privacy Policy
+          </button>
           and
-          <button type="button" class="text-link" (click)="termsRequested.emit()">Terms &amp; Conditions</button>
+          <button type="button" class="text-link" (click)="termsRequested.emit()">
+            Terms &amp; Conditions
+          </button>
         </span>
       </label>
       @if (submitted() && !agreedTerms()) {
@@ -96,28 +108,74 @@ import { COUNTRIES } from '@wizz/utils';
       }
 
       <wizz-button type="submit" size="lg" [fullWidth]="true">Finish Registration</wizz-button>
-
-      <p class="mobile-signin-prompt">
-        Have an account?
-        <button type="button" class="text-link" (click)="loginRequested.emit()">Login</button>
-      </p>
     </form>
   `,
   styles: [
     `
-      .signup-form { display: flex; flex-direction: column; gap: 13px; }
-      .form-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-      .form-heading h1 { margin: 0 0 4px; color: var(--wizz-text); font-size: 1.5rem; font-weight: 800; }
-      .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-      .terms-check { display: flex; align-items: flex-start; gap: 8px; margin-top: 2px; color: var(--wizz-text-secondary); font-size: .78rem; }
-      .terms-check input { flex: 0 0 16px; width: 16px; height: 16px; margin: 0; accent-color: var(--wizz-primary); }
-      .text-link { color: var(--wizz-primary); background: none; border: 0; padding: 0; font: inherit; font-weight: 500; cursor: pointer; }
-      .text-link:hover { text-decoration: underline; }
-      .text-link:focus-visible { outline: 2px solid var(--wizz-primary); outline-offset: 3px; border-radius: 3px; }
-      .inline-error { margin: -6px 0 0; color: var(--wizz-danger); font-size: .75rem; }
-      .mobile-signin-prompt { display: none; margin: 4px 0 0; color: var(--wizz-text-secondary); font-size: .82rem; text-align: center; }
-      @media (max-width: 959px) { .mobile-signin-prompt { display: block; } }
-      @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+      .signup-form {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+      }
+      .form-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .form-heading h1 {
+        margin: 0 0 4px;
+        color: var(--wizz-text);
+        font-size: 1.5rem;
+        font-weight: 800;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .terms-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 2px;
+        color: var(--wizz-text-secondary);
+        font-size: 0.78rem;
+      }
+      .terms-check input {
+        flex: 0 0 16px;
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: var(--wizz-primary);
+      }
+      .text-link {
+        color: var(--wizz-primary);
+        background: none;
+        border: 0;
+        padding: 0;
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .text-link:hover {
+        text-decoration: underline;
+      }
+      .text-link:focus-visible {
+        outline: 2px solid var(--wizz-primary);
+        outline-offset: 3px;
+        border-radius: 3px;
+      }
+      .inline-error {
+        margin: -6px 0 0;
+        color: var(--wizz-danger);
+        font-size: 0.75rem;
+      }
+      @media (max-width: 520px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+      }
     `,
   ],
 })
@@ -142,7 +200,6 @@ export class IndividualSignupFormComponent {
 
   readonly registrationSubmitted = output<void>();
   readonly termsRequested = output<void>();
-  readonly loginRequested = output<void>();
 
   protected readonly countryOptions: readonly SelectOption[] = COUNTRIES.map((country) => ({
     value: country.name,
