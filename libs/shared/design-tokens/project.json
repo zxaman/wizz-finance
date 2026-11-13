@@ -1,0 +1,9 @@
+{
+  "name": "design-tokens",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/design-tokens/src",
+  "prefix": "wizz",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:design-tokens"],
+  "targets": {}
+}

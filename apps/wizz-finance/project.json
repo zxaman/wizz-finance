@@ -1,0 +1,73 @@
+{
+  "name": "wizz-finance",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/wizz-finance/src",
+  "tags": ["scope:wizz-finance", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/wizz-finance",
+        "browser": "apps/wizz-finance/src/main.ts",
+        "tsConfig": "apps/wizz-finance/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/wizz-finance/public"
+          }
+        ],
+        "styles": ["apps/wizz-finance/src/styles.scss"]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "1.2MB",
+              "maximumError": "2.5MB"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "16kB",
+              "maximumError": "32kB"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "options": {
+        "host": "0.0.0.0",
+        "port": 4200,
+        "allowedHosts": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "wizz-finance:build:production"
+        },
+        "development": {
+          "buildTarget": "wizz-finance:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {
+        "tsConfig": "apps/wizz-finance/tsconfig.spec.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "remittance-shell",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/remittance/feature-shell/src",
+  "prefix": "wizz",
+  "projectType": "library",
+  "tags": ["scope:remittance", "type:feature-shell"],
+  "targets": {}
+}
