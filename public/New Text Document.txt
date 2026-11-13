@@ -1,0 +1,89 @@
+1. Landing, Signup, and Login
+01 Base Landing Screen with login and sign up screen
+This introduces the product and prompts users to either log in or sign up. It’s always the entry point.
+
+New User Signup Flow:
+02 362 - Signup Individual _ Capture Details and Submit
+Starts the individual sign up with details entry.
+
+03 446 - Signup - Uniqueness
+Confirms that the email/phone is unique and not already registered.
+
+04 368 - Signup individual _ Verify Email & Phone
+Verifies provided contact details for account creation.
+
+18 385 - Terms & Condition
+Terms and conditions are presented for consent before proceeding.
+
+Social Login and Login Flow:
+07 373 - Social Login
+Supports sign-in via social accounts.
+
+05 369 - Individual _ Login using email and password
+Standard login for returning users.
+
+08 447 - Complete Profile after first social login
+Prompts to complete profile on their initial login via social platform.
+
+06 444 - Post Login action - Continue to update profile Information
+Directs all new users to finish their profile updates to improve onboarding.
+
+2. Password Recovery
+09 378 - Forgot Password Request
+Initiates password recovery.
+
+10 379 - Set new Password after reset link
+Sets a new password after a reset request.
+
+3. KYC and Identity Verification
+11 381 - Upload Identity Document
+Uploads ID documents for KYC.
+
+12 445 - Remove Identity Document
+Option to remove or re-upload incorrect documents.
+
+13 382 - Complete Liveness Check
+Confirms identity via a liveness/selfie test.
+
+4. Beneficiary Management
+14 391 - Add Beneficiary Details & Address
+Step 1 of adding a new beneficiary (personal/address info).
+
+15 448 - Add Beneficiary - Capture bank details and confirm
+Step 2 of adding bank details and confirmation.
+
+26 401 - Select & add beneficiary
+Beneficiary is selected or another is added.
+
+16 393 - View Beneficiary List
+Review a list of all added beneficiaries.
+
+17 399 - Remove Beneficiary
+Option to remove a beneficiary.
+
+5. Payment Methods
+19 395 - Add Payment Method - Bank Accounts
+Add a bank account as a payment method.
+
+20 397 - Bank Account - Micro Deposit
+Verify the bank account by small deposit.
+
+21 449 - Add Payment Method - Card
+Add a card as a payment option.
+
+22 450 - Verify Card - Small Charge
+Verify the card by a small charge.
+
+27 402 - Select and Add Payment Method
+Choose or add a payment method.
+
+23 396 - Remove Payment Methods
+Remove a payment method.
+
+6. Transacting
+24 400 - Send Money - Initiate Remittance
+Initiate a send money/remittance transaction.
+
+7. Compliance & Final Confirmation
+25 403 - Compliance, Review & Confirmation
+Compliance review (such as last KYC check or confirmation) prior to transaction completion.
